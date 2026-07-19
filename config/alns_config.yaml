@@ -88,7 +88,7 @@ logging:
   log_operators: false
   operator_log_interval: 200
 robustness:
-  drone_battery_capacity: 6.3
+  drone_battery_capacity: 0.63
   energy_uncertainty_budget: 3
   energy_deviation_rate: 0.1
   same_truck_retrieval: false
