@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "zotero": {
+      "type": "http",
+      "url": "http://127.0.0.1:23120/mcp"
+    },
+    "chrome-devtools": {
+    "command": "npx",
+    "args": ["-y", "chrome-devtools-mcp@latest"]
+    }
+  }
+}

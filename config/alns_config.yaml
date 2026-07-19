@@ -1,0 +1,129 @@
+general:
+  seed: null
+  deterministic: false
+  time_window_strategy: class_based
+initial_solution:
+  two_phase: true
+iterations:
+  default: 4000
+  small: 2000
+  large: 4000
+  max_non_improve: null
+  time_limit: null
+simulated_annealing:
+  w_percent: 23.72
+  temperature_min: 0.0001
+  cooling:
+    rate_initial: 0.995709
+    rate_final: 0.983861
+    rate_default: 0.99
+    transition_iters: 1432
+reheat:
+  stall_trigger: 513
+  acceptance_window: 103
+  acceptance_min: 0.034
+  duration: 53
+  recovery: 40
+  cooldown: 180
+  quota_multiplier: 3.5
+  quota_upper_cap: 0.9
+  quota_absolute_cap: 85
+  p_floor: 0.15
+  random_repair_prob: 0.54
+  shake_fraction: 0.45
+  shake_probability: 0.9
+  temperature_scale: 0.43
+destroy_quota:
+  r_lower: 0.17
+  r_upper_small: 0.46
+  r_upper_large: 0.3
+  base_cap: 30
+adaptive_selection:
+  eta: 0.409
+  alpha_credit: 0.415
+  rewards:
+    global: 32.08
+    better: 19.11
+    slight_better: 6.91
+    accepted_worse: 2.45
+  weight_bounds:
+    min: 0.1
+    max: 100.0
+  probability_floor: 0.03
+  weight_history: 40
+  weight_decay: 0.0598
+local_search:
+  frequency: 6
+  on_new_best: true
+  depot_drone_probability: 0.14
+  intensify_frequency: 57
+  cross_exchange_prob: 0.0
+  path_relinking_prob: 0.0
+  drone_reanchor_ls_enabled: true
+  drone_reanchor_ls_max_moves: 10
+  drone_composite_reanchor_enabled: false
+  drone_composite_reanchor_max_tasks: 3
+  drone_sortie_constructor_enabled: true
+  drone_sortie_max_customers: 3
+  drone_sortie_top_k: 5
+  drone_sortie_max_sorties: 20
+  mini_milp_polish_enabled: false
+  mini_milp_polish_time_limit: 30.0
+
+  # Step 11: Matheuristic LNS — exhaustive sortie reconstruction
+  matheuristic_lns_enabled: false
+  matheuristic_lns_frequency: 0
+  matheuristic_lns_max_customers: 3
+  matheuristic_lns_trials: 5
+  mini_milp_polish_gap: 0.005
+drone:
+  priority: 2.57
+  rendezvous_tolerance: 100.0
+  bonus:
+    depot: 2.29
+    multi_customer: 4.08
+    multi_customer_threshold: 2
+  forced_drone_customers: []
+logging:
+  log_operators: false
+  operator_log_interval: 200
+robustness:
+  drone_battery_capacity: 6.3
+  energy_uncertainty_budget: 3
+  energy_deviation_rate: 0.1
+  same_truck_retrieval: false
+escape:
+  enabled: false
+  trigger_stall: 80
+  duration: 30
+convergence_enhancement:
+  diversification:
+    enabled: false
+    trigger_stall: 500
+    restart_best_prob: 0.7
+    random_destroy_ratio: 0.6
+  dynamic_cooling:
+    enabled: true
+    improvement_threshold: 0.01
+    slowdown_factor: 0.994
+    speedup_factor: 0.971
+    recent_improvement_window: 64
+  adaptive_quota:
+    enabled: true
+    increase_on_stall: true
+    decrease_on_improve: true
+delay_cost:
+  cost_lambda: 30.0
+  rho: 0.20833333333333334
+  normalized: true
+mip:
+  time_limit: 3600
+  gap: 0
+  threads: 0
+  output_flag: 1
+  piecewise:
+    energy_num_segments: 3
+    delay_num_segments: 3
+relaxation:
+  allow_multiple_launch_per_node: true
+  allow_anchor_conflict: true

@@ -1,0 +1,17 @@
+{
+  "population_size": 150,
+  "generations": 1500,
+  "tournament_size": 7,
+  "crossover_rate": 0.85,
+  "mutation_rate": 0.15,
+  "elite_size": 8,
+  "max_stagnation": 100,
+  "truck_route_crossover_rate": 0.8,
+  "drone_task_mutation_rate": 0.25,
+  "route_segment_swap_rate": 0.5,
+  "time_limit": 600.0,
+  "generation_time_limit": 10.0,
+  "adaptive_enabled": true,
+  "adaptation_interval": 50,
+  "diversity_threshold": 10.0
+}

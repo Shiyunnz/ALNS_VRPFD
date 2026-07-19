@@ -1,0 +1,21 @@
+"""Centralised constants used across the refactored ALNS framework."""
+
+DEPOT_ID = 0
+DEFAULT_TRUCK_ID = 0
+DEFAULT_TRUCK_SPEED = 40.0  # km/h
+DEFAULT_DRONE_ID = 0
+DEFAULT_DRONE_SPEED = 60.0  # km/h
+DEFAULT_DRONE_ENDURANCE = 30.0  # minutes
+DEFAULT_SERVICE_TIME = 5.0  # minutes per customer
+DEFAULT_TRUCK_CAPACITY = 100.0  # kilograms
+
+__all__ = [
+    "DEPOT_ID",
+    "DEFAULT_TRUCK_ID",
+    "DEFAULT_TRUCK_SPEED",
+    "DEFAULT_DRONE_ID",
+    "DEFAULT_DRONE_SPEED",
+    "DEFAULT_DRONE_ENDURANCE",
+    "DEFAULT_SERVICE_TIME",
+    "DEFAULT_TRUCK_CAPACITY",
+]
