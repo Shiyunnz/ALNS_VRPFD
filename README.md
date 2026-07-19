@@ -24,7 +24,7 @@ alns_vrpfd/          — Core algorithm package
 config/              — YAML configuration
 data/                — Benchmark instances (n=10–100)
 heuristics/          — TS and GA baseline implementations
-scripts/             — Experiment runners and analysis
+sensitivity/         — Sensitivity analysis scripts
 run_alns.py          — Main ALNS entry point
 ```
 
@@ -48,7 +48,3 @@ python heuristics/tabu_search/run_tabu.py data/Instance10/R_30_10_1.txt
 ```
 
 Configuration is managed through `config/alns_config.yaml`.
-
-## Paper
-
-The accompanying paper provides a full problem description, MILP formulation, algorithm design, and computational results. See [main.tex](paper/main.tex) for details.
