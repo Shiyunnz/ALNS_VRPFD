@@ -6,13 +6,13 @@ B: ALNS + Step6 (drone_reanchor_ls)
 C: ALNS + Step6 + MLNS final polish
 D: MILP optimum
 
-Usage: python scripts/final_comparison.py [--seeds 10] [--iters 4000]
+Usage: python final_comparison.py [--seeds 10] [--iters 4000]
 """
 
 import sys, time, json, random, math, statistics, argparse
 from pathlib import Path
 
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 

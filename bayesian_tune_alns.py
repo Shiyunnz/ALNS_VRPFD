@@ -13,7 +13,7 @@ Objective: minimize mean cost across instances (infeasible = penalty)
 
 Usage:
     cd code/
-    python scripts/bayesian_tune_alns.py [--phase {1,2,3,all}] [--trials N] [--jobs N]
+    python bayesian_tune_alns.py [--phase {1,2,3,all}] [--trials N] [--jobs N]
 """
 
 import sys
@@ -32,7 +32,7 @@ import numpy as np
 import optuna
 from optuna.samplers import TPESampler
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from alns_vrpfd.utils.io_utils import read_instance

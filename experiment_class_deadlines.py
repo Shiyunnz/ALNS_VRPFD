@@ -5,14 +5,14 @@ Creates a separate results directory. Does NOT modify any existing code.
 
 Usage:
     cd code/
-    python scripts/experiment_class_deadlines.py
+    python experiment_class_deadlines.py
 """
 
 import sys, os, time, random, numpy as np, logging, datetime
 from pathlib import Path
 from copy import deepcopy
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from alns_vrpfd.utils.data_reader import InstanceDataReader, TimeWindowConfig

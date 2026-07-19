@@ -7,13 +7,13 @@ C: ALNS + Step6 + MLNS final polish
 D: ALNS + Step6 + MLNS + TruckDroneRechain polish
 E: MILP with ALNS verification
 
-Usage: python scripts/ablation_rechain.py [--seeds 5] [--iters 4000]
+Usage: python ablation_rechain.py [--seeds 5] [--iters 4000]
 """
 
 import sys, time, json, random, math, statistics, argparse
 from pathlib import Path
 
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
