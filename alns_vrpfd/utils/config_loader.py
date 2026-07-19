@@ -421,7 +421,8 @@ class ALNSConfig:
     # ========== 鲁棒性设置 ==========
     @property
     def drone_battery_capacity(self) -> float:
-        return get_nested(self._config, "robustness", "drone_battery_capacity", default=6.3)
+        """Config stores value /10 for paper consistency; code uses ×10."""
+        return get_nested(self._config, "robustness", "drone_battery_capacity", default=6.3) * 10.0
 
     @property
     def energy_uncertainty_budget(self) -> int:
