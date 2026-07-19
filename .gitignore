@@ -62,3 +62,12 @@ logs/
 .python-version
 *.env
 
+ablation_*.py
+bayesian_*.py
+experiment_*.py
+final_comparison.py
+oracle_*.py
+plot_*.py
+run_alns_milp_comparison.py
+run_convergence_analysis.py
+README.md
