@@ -47,7 +47,7 @@ def build_operators(
 ):
     rng = master_rng or random.Random(seed)
 
-    # 使用传入的 drone_bonus_kwargs 或默认值
+    # drone_bonus_kwargs
     if drone_bonus_kwargs is None:
         drone_bonus_kwargs = {
             "depot_bonus": 1.5,
@@ -57,7 +57,7 @@ def build_operators(
         }
     repair_kwargs = dict(drone_bonus_kwargs)
 
-    # 添加 forced_drone_customers 到 kwargs
+    # forced_drone_customers  kwargs
     if forced_drone_customers:
         repair_kwargs["forced_drone_customers"] = forced_drone_customers
     if repair_weights is not None:
@@ -73,7 +73,7 @@ def build_operators(
     # operator_profile is accepted for compatibility but does not change operators.
     profile = "lite"
 
-    # 使用固定的基础销毁算子集合
+
     destroy_ops = [
         DestroyRandom(instance, rng=_rng_for(1000),
                       anchor_strategy="rebase_to_neighbor"),
@@ -136,12 +136,12 @@ def build_operators(
             ),
         ]
     else:  # "new"
-        # 测试模式：只保留4个基础修复算子
+        # ：4
         repair_ops = [
-            # 无人机能耗插入（最便宜插入）
+            # （）
             RepairCheapest(instance, rng=_rng_for(2004),
                            drone_priority=drone_priority, robust_energy_mode=robust_energy_mode, **repair_kwargs),
-            # 无人机后悔值插入
+
             RepairDronePriorityRegret(
                 instance,
                 rng=_rng_for(2002),
@@ -149,7 +149,7 @@ def build_operators(
                 robust_energy_mode=robust_energy_mode,
                 **repair_kwargs,
             ),
-            # 卡车优先插入
+
             RepairTruckFirst(
                 instance,
                 rng=_rng_for(2003),
@@ -157,7 +157,7 @@ def build_operators(
                 robust_energy_mode=robust_energy_mode,
                 **repair_kwargs,
             ),
-            # 等机会插入
+
             RepairEqualPriority(
                 instance,
                 rng=_rng_for(2001),
@@ -167,7 +167,7 @@ def build_operators(
             ),
         ]
 
-    # 以下修复算子暂时禁用，用于测试基础算子效果
+    # ，
     # repair_ops.append(
     #     RepairMergeRoutes(
     #         instance,
@@ -214,7 +214,7 @@ def build_operators(
     # ])
 
     # # Add depot cluster repair for depot-launched drone tasks (key for MILP-like solutions)
-    # # 获取 forced_drone_customers
+    # #  forced_drone_customers
     # forced_drone = drone_bonus_kwargs.get("forced_drone_customers", [])
     # repair_ops.extend([
     #     DepotClusterRepair(
@@ -257,6 +257,7 @@ _build_operators = build_operators
 
 def infer_size(instance) -> str:
     """Infer size bucket from customer count for SANNCfg defaults."""
+    """Infer size bucket from customer count for SANNCfg defaults."""
     num_customers = len(instance.customer_manager.customer_ids())
     if num_customers <= 15:
         return "small"
@@ -298,12 +299,12 @@ def main_alns():
 
     config = ALNSConfig("config/alns_config.yaml")
 
-    # Seed 处理：命令行参数 > 配置文件 > 系统时间
+    # Seed ： >  >
     seed = args.seed
     if seed is None:
         seed = config.seed if config.seed is not None else int(time.time())
 
-    # 迭代次数：命令行参数 > 配置文件默认值
+    # ： >
     iterations = args.iterations if args.iterations else config.iterations_default
 
     print(f"Running ALNS on {instance_path}")
@@ -347,7 +348,7 @@ def main_alns():
         f"strategy={strategy}"
     )
 
-    # 强制无人机客户
+
     forced_drone_customers = config.forced_drone_customers
     if forced_drone_customers:
         print(f"Forced drone customers: {forced_drone_customers}")
@@ -395,10 +396,10 @@ def main_alns():
 
     sa_config_dict = config.build_sa_config_dict()
 
-    # 迭代次数：命令行参数 > 配置文件默认值
+    # ： >
     sa_config_dict['iterations'] = iterations
 
-    # 算子日志设置从配置文件读取
+
     sa_config_dict['log_operator_metrics'] = config.log_operators
     sa_config_dict['operator_log_interval'] = config.operator_log_interval
 
@@ -408,7 +409,7 @@ def main_alns():
     sa_cfg = SANNCfg(**sa_config_dict)
     rng = random.Random(seed)
 
-    # 从配置文件获取无人机奖励参数
+
     drone_bonus_kwargs = config.drone_bonus
 
     destroy_ops, repair_ops = build_operators(
@@ -443,8 +444,8 @@ def main_alns():
         if embedded_regret is not None:
             repair_ops = list(repair_ops) + [embedded_regret]
 
-    # 构建初始解时直接排除禁止卡车访问的节点
-    # 可选择使用两阶段启发式 (two_phase=True) 或原始算法 (two_phase=False)
+
+    # (two_phase=True)  (two_phase=False)
     use_two_phase = config.raw.get(
         "initial_solution", {}).get("two_phase", True)
 

@@ -31,6 +31,7 @@ __all__ = [
 @dataclass(frozen=True)
 class DroneTaskTiming:
     """Timing data for a drone task under lazy evaluation assumptions."""
+    """Timing data for a drone task under lazy evaluation assumptions."""
 
     launch_time: float
     customer_arrival_times: Mapping[int, float]
@@ -39,6 +40,7 @@ class DroneTaskTiming:
 
 @dataclass(frozen=True)
 class DroneTaskContext:
+    """Contextual information required to validate a drone task."""
     """Contextual information required to validate a drone task."""
 
     valid_nodes: Optional[AbstractSet[int]] = None
@@ -66,6 +68,7 @@ def _intervals_overlap(
     first: Tuple[float, float], second: Tuple[float, float], tolerance: float
 ) -> bool:
     """Return True when the open intervals overlap beyond a tolerance."""
+    """Return True when the open intervals overlap beyond a tolerance."""
 
     start_a, end_a = first
     start_b, end_b = second
@@ -75,6 +78,7 @@ def _intervals_overlap(
 def _value_for_drone(
     value: float | Mapping[int, float] | None, drone_id: int
 ) -> float | None:
+    """Return scalar value resolved for a specific drone identifier."""
     """Return scalar value resolved for a specific drone identifier."""
 
     if value is None:
@@ -86,6 +90,7 @@ def _value_for_drone(
 
 class Route(ABC):
     """Base representation of an ordered sequence of nodes."""
+    """Base representation of an ordered sequence of nodes."""
 
     def __init__(self, route_id: int, nodes: Sequence[int]) -> None:
         self.id = route_id
@@ -96,11 +101,13 @@ class Route(ABC):
 
     def customers(self) -> List[int]:
         """Return the customer nodes between the start and end points."""
+        """Return the customer nodes between the start and end points."""
         return self.nodes[1:-1]
 
     def insert_customer(self, index: int, customer: int) -> None:
         """Insert a customer at the given customer index (0-based)."""
-        # 防御性检查：避免重复插入
+        """Insert a customer at the given customer index (0-based)."""
+        # ：
         if customer in self.nodes:
             return
         count = len(self.customers())
@@ -111,6 +118,7 @@ class Route(ABC):
 
     def remove_customer(self, customer: int) -> None:
         """Remove the specified customer from the route."""
+        """Remove the specified customer from the route."""
         try:
             idx = self.nodes.index(customer, 1, len(self.nodes) - 1)
         except ValueError as exc:
@@ -119,6 +127,7 @@ class Route(ABC):
         self._on_customers_changed()
 
     def swap_customers(self, first_index: int, second_index: int) -> None:
+        """Swap the order of two customers identified by their indices."""
         """Swap the order of two customers identified by their indices."""
         count = len(self.customers())
         if not (0 <= first_index < count) or not (0 <= second_index < count):
@@ -132,6 +141,7 @@ class Route(ABC):
 
     def total_distance(self, dist_matrix: Sequence[Sequence[float]]) -> float:
         """Compute the total distance using a distance matrix."""
+        """Compute the total distance using a distance matrix."""
         distance = 0.0
         for start, end in zip(self.nodes, self.nodes[1:]):
             distance += dist_matrix[start][end]
@@ -139,18 +149,22 @@ class Route(ABC):
 
     def clone(self) -> "Route":
         """Create a deep copy of the route."""
+        """Create a deep copy of the route."""
         return copy.deepcopy(self)
 
     @abstractmethod
     def is_feasible(self, context: Optional[object] = None) -> bool:
         """Return whether the current route satisfies its constraints."""
+        """Return whether the current route satisfies its constraints."""
 
     def _on_customers_changed(self) -> None:
+        """Hook called after customer-related structure updates."""
         """Hook called after customer-related structure updates."""
         return
 
 
 class TruckRoute(Route):
+    """Represents a truck tour with capacity tracking."""
     """Represents a truck tour with capacity tracking."""
 
     def __init__(
@@ -166,15 +180,18 @@ class TruckRoute(Route):
 
     def is_feasible(self, context: Optional[object] = None) -> bool:
         """Return True when current load does not exceed capacity."""
+        """Return True when current load does not exceed capacity."""
         return self.current_load <= self.capacity
 
     def check_capacity(self, demands: Mapping[int, float]) -> bool:
+        """Verify that customer demands do not exceed truck capacity."""
         """Verify that customer demands do not exceed truck capacity."""
         route_demand = sum(demands.get(c, 0.0) for c in self.customers())
         return (route_demand + self.current_load) <= self.capacity
 
 
 class DroneTask(Route):
+    """Describe a full drone task from launch to landing through customers."""
     """Describe a full drone task from launch to landing through customers."""
 
     def __init__(
@@ -198,6 +215,7 @@ class DroneTask(Route):
 
     def __repr__(self) -> str:
         """Return a human readable representation of the task."""
+        """Return a human readable representation of the task."""
         launch_str = f"depot@{self.launch_node}" if self.launch_truck is None else f"T{self.launch_truck}@{self.launch_node}"
         retrieve_str = f"depot@{self.retrieve_node}" if self.land_truck is None else f"T{self.land_truck}@{self.retrieve_node}"
         return (
@@ -209,14 +227,17 @@ class DroneTask(Route):
     @property
     def launch_node(self) -> int:
         """Return the launch node for the mission."""
+        """Return the launch node for the mission."""
         return self.nodes[0]
 
     @property
     def retrieve_node(self) -> int:
         """Return the retrieval node for the mission."""
+        """Return the retrieval node for the mission."""
         return self.nodes[-1]
 
     def is_feasible(self, context: Optional[DroneTaskContext] = None) -> bool:
+        """Return True when no feasibility violations are detected."""
         """Return True when no feasibility violations are detected."""
 
         return not self.feasibility_errors(context)
@@ -224,6 +245,7 @@ class DroneTask(Route):
     def feasibility_errors(
         self, context: Optional[DroneTaskContext] = None
     ) -> List[str]:
+        """Return a list of feasibility violations for the task."""
         """Return a list of feasibility violations for the task."""
 
         ctx = context or DroneTaskContext()
@@ -455,6 +477,7 @@ class DroneTask(Route):
 
     def _initialise_payloads(self, payloads: Optional[Sequence[float]]) -> List[float]:
         """Normalise payload data and align with customer count."""
+        """Normalise payload data and align with customer count."""
         expected = len(self.customers()) + 1
         if payloads is None:
             return [0.0] * expected
@@ -467,6 +490,7 @@ class DroneTask(Route):
         return payload_list
 
     def _on_customers_changed(self) -> None:
+        """Resize payloads when customer sequence length changes."""
         """Resize payloads when customer sequence length changes."""
         expected = len(self.customers()) + 1
         if len(self.payloads) < expected:

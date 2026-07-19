@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 def build_pseudo_solution(customers: Sequence[int] | None = None) -> Solution:
     """Create a trivial feasible solution used to exercise the framework."""
+    """Create a trivial feasible solution used to exercise the framework."""
     if customers is None:
         customers = (1, 2)
 
@@ -72,7 +73,7 @@ def build_initial_solution(
         instance: Problem instance
         truck_forbidden_customers: Customers that cannot be visited by truck
     """
-    # 禁止卡车访问的节点集合
+
     forbidden_set = set(truck_forbidden_customers or [])
 
     # Generate time windows first to ensure truck routes respect them
@@ -84,11 +85,11 @@ def build_initial_solution(
 
     truck_routes = _build_truck_routes(instance, time_limit=60.0)
 
-    # 从卡车路线中移除禁止节点
+
     if forbidden_set:
         for route in truck_routes:
             original_nodes = list(route.nodes)
-            # 保留起终点，移除中间的禁止节点
+            # ，
             new_nodes = [original_nodes[0]]  # depot start
             for node in original_nodes[1:-1]:
                 if node not in forbidden_set:
@@ -167,7 +168,7 @@ def build_initial_solution(
     for task in depot_drone_tasks:
         solution.add_drone_task(task)
 
-    # 为禁止卡车访问但尚未被无人机服务的节点创建专门的无人机任务
+
     if forbidden_set:
         forbidden_drone_tasks = _construct_forbidden_customer_drone_tasks(
             instance,
@@ -662,6 +663,7 @@ def _next_feasible_customer(
     current_time: float,
 ) -> int | None:
     """Select the nearest customer that can be visited within time window constraints."""
+    """Select the nearest customer that can be visited within time window constraints."""
     shortest = float("inf")
     best = None
     i = node_index.get(origin)
@@ -758,18 +760,18 @@ def _construct_forbidden_customer_drone_tasks(
     forbidden_customers: Set[int],
     existing_drone_tasks: Sequence[DroneTask],
 ) -> List[DroneTask]:
-    """为禁止卡车访问但尚未被无人机服务的客户创建无人机任务。
+    """。
 
-    这些任务从depot发射，在卡车路线的某个节点降落。
+    depot，。
 
     Args:
-        instance: 问题实例
-        truck_routes: 已构建的卡车路线
-        forbidden_customers: 禁止卡车访问的客户集合
-        existing_drone_tasks: 已有的无人机任务（用于检查哪些客户已被服务）
+        instance: 
+        truck_routes: 
+        forbidden_customers: 
+        existing_drone_tasks: （）
 
     Returns:
-        为禁止客户创建的无人机任务列表
+        
     """
     if not forbidden_customers or not truck_routes:
         return []
@@ -778,7 +780,7 @@ def _construct_forbidden_customer_drone_tasks(
     if drone_spec is None or drone_spec.number <= 0:
         return []
 
-    # 找出尚未被任何无人机任务服务的禁止客户
+
     served_by_drone: Set[int] = set()
     for task in existing_drone_tasks:
         served_by_drone.update(task.customers())
@@ -799,14 +801,14 @@ def _construct_forbidden_customer_drone_tasks(
         "inf")
 
     tasks: List[DroneTask] = []
-    task_id = 2000  # 使用高ID避免冲突
+    task_id = 2000  # ID
     drone_ids = list(range(drone_spec.number)) or [0]
     next_drone_idx = 0
 
-    # 为每个未服务的禁止客户创建无人机任务
+
     for customer in sorted(unserved_forbidden):
         if next_drone_idx >= len(drone_ids):
-            # 可以循环使用无人机
+
             next_drone_idx = 0
 
         demand = demands.get(customer, 0.0)
@@ -815,22 +817,22 @@ def _construct_forbidden_customer_drone_tasks(
                 f"Forbidden customer {customer} demand {demand} exceeds drone capacity {drone_spec.capacity}")
             continue
 
-        # 找到最佳的降落节点（在某个卡车路线上）
+        # （）
         best_retrieve_node: int | None = None
         best_retrieve_route: TruckRoute | None = None
         best_energy = float("inf")
 
         for route in truck_routes:
-            # 考虑卡车路线中的每个节点作为可能的降落点
+
             for node in route.nodes:
                 if node == depot_start or node == depot_end:
-                    # depot也可以作为降落点
+                    # depot
                     pass
                 if node in forbidden_customers and node != depot_start and node != depot_end:
-                    # 不能降落在另一个禁止节点上（除非是depot）
+                    # （depot）
                     continue
 
-                # 计算能量消耗：depot -> customer -> node
+                # ：depot -> customer -> node
                 energy = _nominal_energy(
                     launch=depot_start,
                     customers=[customer],
@@ -855,7 +857,7 @@ def _construct_forbidden_customer_drone_tasks(
         task = DroneTask(
             task_id=task_id,
             drone_id=drone_ids[next_drone_idx],
-            launch_truck=None,  # 从depot发射
+            launch_truck=None,  # depot
             launch_node=depot_start,
             customers=[customer],
             land_truck=best_retrieve_route.id,
@@ -876,6 +878,7 @@ def _construct_depot_drone_tasks(
     original_truck_nodes: Sequence[Sequence[int]],
     truck_routes: Sequence[TruckRoute],
 ) -> List[DroneTask]:
+    """Construct drone tasks that launch from depot and retrieve at truck routes."""
     """Construct drone tasks that launch from depot and retrieve at truck routes."""
     drone_spec = instance.vehicle_specs.get("drone")
     if drone_spec is None or drone_spec.number <= 0:
@@ -1331,6 +1334,7 @@ def _build_deadline_balanced_routes(
     instance: InstanceManager,
 ) -> List[TruckRoute]:
     """Build large-instance truck routes by assigning earliest deadlines first."""
+    """Build large-instance truck routes by assigning earliest deadlines first."""
     deadline_buffer = 0.05
     ordered_customers = sorted(
         customers,
@@ -1413,6 +1417,7 @@ def _find_earliest_deadline_feasible_nn(
     depot_end: int,
 ) -> int | None:
     """Find feasible customer with earliest hard deadline, then shortest distance."""
+    """Find feasible customer with earliest hard deadline, then shortest distance."""
     best_key = (float("inf"), float("inf"))
     best_customer = None
 
@@ -1466,6 +1471,7 @@ def _find_nearest_feasible_nn(
     demands: Mapping[int, float],
     depot_end: int,
 ) -> int | None:
+    """Find nearest customer satisfying capacity and time window constraints."""
     """Find nearest customer satisfying capacity and time window constraints."""
     shortest_dist = float("inf")
     best_customer = None
@@ -2088,6 +2094,7 @@ def _compute_robust_energy(
     uncertainty_budget: float,
 ) -> float:
     """Compute robust (worst-case) energy consumption."""
+    """Compute robust (worst-case) energy consumption."""
     if not customers:
         return 0.0
 
@@ -2132,6 +2139,7 @@ def _check_drone_time_feasibility(
     truck_time_matrix: Sequence[Sequence[float]],
     instance: InstanceManager,
 ) -> bool:
+    """Check if drone task respects time window constraints."""
     """Check if drone task respects time window constraints."""
     # Calculate drone arrival time at each customer
     nodes = [launch_node, *customers, retrieve_node]

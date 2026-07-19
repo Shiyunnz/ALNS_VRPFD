@@ -1,15 +1,15 @@
 """
-电池容量敏感度分析
 
-默认遍历算例目录，并考察不同无人机电池容量对以下指标的影响：
-1. 总成本 (Total Cost)
-2. 相对基线成本节省百分比 (Cost Saving vs Baseline %)
-3. 无人机服务客户数量 (Drone-served Customers)
 
-统计口径：
-- 每个 (instance, battery_level) 运行 k 次（--trials）
-- 先在该组合内按 best_cost 最小选 best-of-k（平局取 best_drone_customers 更大）
-- 再按参数水平对各算例 best-of-k 结果做跨算例平均
+，：
+1.  (Total Cost)
+2.  (Cost Saving vs Baseline %)
+3.  (Drone-served Customers)
+
+：
+-  (instance, battery_level)  k （--trials）
+-  best_cost  best-of-k（ best_drone_customers ）
+-  best-of-k 
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ _default_config = ALNSConfig()
 
 
 # ==========================================================================
-# 实验配置
+
 # ==========================================================================
 
 BATTERY_LEVELS = [4.3, 5.3, 6.3, 7.3, 8.3]
@@ -74,7 +74,7 @@ OUTPUT_CSV = OUTPUT_DIR / "battery_sensitivity_results.csv"
 
 
 # ==========================================================================
-# 参数与工具函数
+
 # ==========================================================================
 
 
@@ -137,6 +137,7 @@ def collect_instance_paths(
     regions: str | None,
     instance_name: str | None,
 ) -> List[str]:
+    """。"""
     """根据目录列表收集算例文件路径。"""
     return collect_instance_paths_with_scope(
         instance_dirs,
@@ -169,6 +170,7 @@ def _extract_scale_label(instance_path: str) -> str:
 
 
 def _choose_best_result(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
+    """ best_cost  + best_drone_customers （）。"""
     """按 best_cost 最小 + best_drone_customers 最大（平局）选择最佳记录。"""
     if not rows:
         return None
@@ -202,7 +204,7 @@ def _build_sa_config(instance) -> SANNCfg:
 
 
 # ==========================================================================
-# 核心实验逻辑
+
 # ==========================================================================
 
 
@@ -213,6 +215,7 @@ def run_single_experiment(
     same_truck_retrieval: bool = False,
     seed: int | None = None,
 ) -> Dict[str, Any]:
+    """。"""
     """运行单个电池容量配置实验。"""
 
     print(
@@ -369,6 +372,7 @@ def run_single_experiment(
 def load_baseline_from_csv(
     instance_paths: List[str],
 ) -> tuple[Dict[str, float], Dict[str, Dict[str, Any]]]:
+    """ CSV 。"""
     """从现有 CSV 加载基线成本与基线最佳记录。"""
     baseline_costs: Dict[str, float] = {path: math.inf for path in instance_paths}
     baseline_rows: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
@@ -417,6 +421,7 @@ def run_battery_sensitivity_analysis(
     skip_baseline: bool = False,
     trials: int = 5,
 ) -> List[Dict[str, Any]]:
+    """。"""
     """运行电池容量敏感度分析并返回结果列表。"""
 
     if battery_levels is None:
@@ -578,11 +583,12 @@ def run_battery_sensitivity_analysis(
 
 
 # ==========================================================================
-# 输出
+
 # ==========================================================================
 
 
 def write_summary_csv(results: Iterable[Dict[str, Any]], out_path: Path) -> None:
+    """Write compact summary grouped by scale and battery_capacity."""
     """Write compact summary grouped by scale and battery_capacity."""
 
     # 1. Collapse to best-of-k per (instance, battery_capacity)

@@ -28,6 +28,7 @@ __all__ = [
 @dataclass
 class UnassignedPool:
     """Container for customers removed by a destroy operator."""
+    """Container for customers removed by a destroy operator."""
 
     customers: List[int] = field(default_factory=list)
 
@@ -40,6 +41,7 @@ class UnassignedPool:
 
 @dataclass
 class CustomerAssignment:
+    """Record describing where a customer is currently served."""
     """Record describing where a customer is currently served."""
 
     customer_id: int
@@ -54,6 +56,7 @@ class CustomerAssignment:
 
 
 class DestroyOperator(ABC):
+    """Common scaffolding for destroy operators."""
     """Common scaffolding for destroy operators."""
 
     def __init__(
@@ -82,6 +85,7 @@ class DestroyOperator(ABC):
 
     def apply(self, solution: Solution, count: int) -> Tuple[Solution, UnassignedPool]:
         """Remove up to ``count`` customers from the solution."""
+        """Remove up to ``count`` customers from the solution."""
 
         assignments = self._collect_assignments(solution)
         if not assignments:
@@ -109,6 +113,7 @@ class DestroyOperator(ABC):
         assignments: Mapping[int, CustomerAssignment],
         count: int,
     ) -> List[int]:
+        """Return the customers to be removed."""
         """Return the customers to be removed."""
 
     # ------------------------------------------------------------------
@@ -181,59 +186,60 @@ class DestroyOperator(ABC):
         pool: UnassignedPool,
     ) -> None:
         """
-        三层移除机制实现：
-        1. 普通移除 (V(j)=2): 节点仅由卡车访问，无无人机发射/回收
-        2. 同步移除 (V(j)>2): 节点是无人机的发射/回收点，需连带移除相关无人机任务
-        3. 一致性移除: 移除后检查并修复停靠一致性（连锁移除破坏一致性的任务）
+        ：
+        1.  (V(j)=2): ，/
+        2.  (V(j)>2): /，
+        3. : （）
         """
         nodes = route.nodes
         node_index = nodes.index(customer_id)
         prev_node = nodes[node_index - 1]
         next_node = nodes[node_index + 1]
 
-        # 计算 V(j): 节点j涉及的车辆动作数
-        # 基础动作 = 2（卡车进入 + 卡车离开）
-        # 每个以j为发射点的无人机任务 +1（无人机发射）
-        # 每个以j为回收点的无人机任务 +1（无人机回收）
+        # V(j): j
+        # = 2（ + ）
+        # j +1（）
+        # j +1（）
         vehicle_actions = self._count_vehicle_actions(solution, customer_id)
 
         if vehicle_actions == 2:
-            # 普通移除：仅移除该节点
+            # ：
             route.remove_customer(customer_id)
             pool.add(customer_id)
         else:
-            # 同步移除：移除节点 + 相关无人机子路径
+            # ： +
             affected_tasks = self._get_anchor_tasks(solution, customer_id)
 
-            # 先移除所有受影响的无人机任务
+
             for task in affected_tasks:
                 pool.extend(task.customers())
                 if task in solution.drone_tasks:
                     solution.drone_tasks.remove(task)
 
-            # 再移除卡车节点
+
             route.remove_customer(customer_id)
             pool.add(customer_id)
 
-            # 一致性移除：检查并修复停靠一致性
+            # ：
             self._ensure_docking_consistency(solution, route, pool)
 
     def _count_vehicle_actions(self, solution: Solution, node: int) -> int:
         """
-        计算节点涉及的车辆动作数 V(j)
-        - 基础 = 2（卡车一进一出）
-        - 每个以该节点为发射点的任务 +1
-        - 每个以该节点为回收点的任务 +1
+         V(j)
+        -  = 2（）
+        -  +1
+        -  +1
         """
-        actions = 2  # 卡车进入 + 离开
+        actions = 2  # +
         for task in solution.drone_tasks:
             if task.launch_node == node:
-                actions += 1  # 无人机发射
+                actions += 1
             if task.retrieve_node == node:
-                actions += 1  # 无人机回收
+                actions += 1
         return actions
 
     def _get_anchor_tasks(self, solution: Solution, node: int) -> List[DroneTask]:
+        """"""
         """获取以指定节点为发射或回收点的所有无人机任务"""
         return [
             task for task in solution.drone_tasks
@@ -247,16 +253,16 @@ class DestroyOperator(ABC):
         pool: UnassignedPool,
     ) -> None:
         """
-        一致性移除：确保无人机任务的发射/回收节点仍存在于对应卡车路径上。
+        ：/。
 
-        无人机允许跨卡车起降（从卡车A发射，在卡车B回收），因此需要：
-        1. 检查每个任务的发射节点是否在其 launch_truck 的路径上
-        2. 检查每个任务的回收节点是否在其 land_truck 的路径上
-        3. 对于同一无人机的连续任务，确保时序一致性
+        （A，B），：
+        1.  launch_truck 
+        2.  land_truck 
+        3. ，
 
-        如果移除某节点后破坏了这些约束，需要连锁移除相关任务。
+        ，。
         """
-        # 构建卡车路径的节点集合映射
+
         truck_route_nodes: Dict[int, set] = {}
         truck_route_position: Dict[int, Dict[int, int]] = {}
         for tr in solution.truck_routes:
@@ -266,30 +272,30 @@ class DestroyOperator(ABC):
 
         tasks_to_remove: List[DroneTask] = []
 
-        # 第一步：检查每个任务的发射/回收节点是否仍在对应卡车路径上
+        # ：/
         for task in solution.drone_tasks:
             launch_valid = True
             retrieve_valid = True
 
-            # 检查发射节点
+
             if task.launch_truck is not None:
                 launch_nodes = truck_route_nodes.get(task.launch_truck, set())
                 if task.launch_node not in launch_nodes:
                     launch_valid = False
-            # launch_truck=None 表示从仓库发射，仓库节点0始终有效
+            # launch_truck=None ，0
 
-            # 检查回收节点
+
             if task.land_truck is not None:
                 land_nodes = truck_route_nodes.get(task.land_truck, set())
                 if task.retrieve_node not in land_nodes:
                     retrieve_valid = False
-            # land_truck=None 表示返回仓库，仓库节点0始终有效
+            # land_truck=None ，0
 
             if not launch_valid or not retrieve_valid:
                 tasks_to_remove.append(task)
 
-        # 第二步：检查同一无人机连续任务的时序一致性
-        # 按无人机分组任务
+        # ：
+
         drone_tasks_by_id: Dict[int, List[DroneTask]] = {}
         for task in solution.drone_tasks:
             if task not in tasks_to_remove:
@@ -301,24 +307,25 @@ class DestroyOperator(ABC):
             if len(tasks) < 2:
                 continue
 
-            # 按发射节点在各自卡车路径上的位置排序
-            # 对于跨卡车的情况，使用回收卡车和发射卡车的关系来判断顺序
+
+            # ，
             def get_task_order_key(t: DroneTask) -> Tuple[int, int]:
+                """ (land_truck_id, retrieve_position) """
                 """返回 (land_truck_id, retrieve_position) 用于排序"""
                 if t.land_truck is None:
-                    return (float('inf'), 0)  # 返回仓库的任务排最后
+                    return (float('inf'), 0)
                 positions = truck_route_position.get(t.land_truck, {})
                 pos = positions.get(t.retrieve_node, 0)
                 return (t.land_truck, pos)
 
             tasks.sort(key=get_task_order_key)
 
-            # 检查连续任务：前一任务的回收必须在后一任务发射之前完成
+            # ：
             for i in range(len(tasks) - 1):
                 curr_task = tasks[i]
                 next_task = tasks[i + 1]
 
-                # 如果两个任务在同一卡车上，检查位置顺序
+                # ，
                 if curr_task.land_truck == next_task.launch_truck and curr_task.land_truck is not None:
                     positions = truck_route_position.get(
                         curr_task.land_truck, {})
@@ -326,11 +333,11 @@ class DestroyOperator(ABC):
                         curr_task.retrieve_node, -1)
                     next_launch_pos = positions.get(next_task.launch_node, -1)
 
-                    # 回收位置必须 <= 下一次发射位置
+                    # <=
                     if curr_retrieve_pos > next_launch_pos:
                         tasks_to_remove.append(next_task)
 
-        # 移除违反一致性的任务
+
         for task in set(tasks_to_remove):
             if task in solution.drone_tasks:
                 pool.extend(task.customers())
@@ -359,6 +366,7 @@ class DestroyOperator(ABC):
         next_node: int,
         pool: UnassignedPool,
     ) -> None:
+        """，。 _remove_from_truck_route"""
         """遗留方法，保持向后兼容。实际逻辑已移至 _remove_from_truck_route"""
         affected: List[DroneTask] = [
             task

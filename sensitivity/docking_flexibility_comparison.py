@@ -1,11 +1,11 @@
 """
-灵活起降 vs 同车回收 优势对比分析
+ vs  
 
-对比两种无人机回收模式下 ALNS 算法的效果：
-1. 灵活起降 (Flexible): 允许异车回收或异地回收 (same_truck_retrieval=False)
-2. 同车回收 (Same-Truck): 仅允许同车原位或异位回收 (same_truck_retrieval=True)
+ ALNS ：
+1.  (Flexible):  (same_truck_retrieval=False)
+2.  (Same-Truck):  (same_truck_retrieval=True)
 
-基线: 同车回收模式 (Same-Truck)
+:  (Same-Truck)
 """
 
 from __future__ import annotations
@@ -48,6 +48,7 @@ from run_alns import build_operators
 
 def _infer_size(instance) -> str:
     """Infer 'small'|'medium'|'large' based on customer count."""
+    """Infer 'small'|'medium'|'large' based on customer count."""
     num_customers = len(instance.customer_manager.customer_ids())
     if num_customers <= 15:
         return "small"
@@ -58,6 +59,7 @@ def _infer_size(instance) -> str:
 
 def _safe_mean(values: List[float]) -> float:
     """Compute mean of values, returning 0.0 if list is empty."""
+    """Compute mean of values, returning 0.0 if list is empty."""
     filtered = [v for v in values if isinstance(v, (int, float)) and math.isfinite(v)]
     return sum(filtered) / len(filtered) if filtered else 0.0
 
@@ -67,10 +69,10 @@ _default_config = ALNSConfig()
 
 
 # ==========================================================================
-# 实验配置
+
 # ==========================================================================
 
-# 模式配置: baseline 为 same_truck
+# : baseline  same_truck
 DOCKING_MODES = {
     "same_truck": {
         "name": "Same-Truck",
@@ -84,10 +86,10 @@ DOCKING_MODES = {
     },
 }
 
-# 默认算例目录（用于论文主实验：Instance25）
+# （：Instance25）
 DEFAULT_INSTANCE_DIRS = [Path("data/Instance25")]
 
-# ALNS 运行参数
+# ALNS
 ITERATIONS = 2000
 TIME_LIMIT = _default_config.time_limit
 SEED = _default_config.seed
@@ -109,6 +111,7 @@ SUMMARY_CSV = OUTPUT_DIR / f"{OUTPUT_PREFIX}_summary.csv"
 
 
 def _build_sa_config(instance) -> SANNCfg:
+    """YAMLSANNCfg"""
     """从YAML配置构建SANNCfg"""
     sa_config_dict = _default_config.build_sa_config_dict()
     sa_config_dict['size'] = _infer_size(instance)
@@ -126,6 +129,7 @@ def _current_drone_bonus_kwargs() -> Dict[str, Any]:
 
 
 def _configure_instance_robustness(instance, *, same_truck_retrieval: bool) -> None:
+    """Apply robustness settings with the requested docking mode."""
     """Apply robustness settings with the requested docking mode."""
     instance.configure_robustness(
         drone_battery_capacity=_default_config.drone_battery_capacity,
@@ -153,6 +157,7 @@ def _run_alns_stage(
     seed: int,
     iterations: int,
 ):
+    """Run one ALNS stage under a fixed docking mode."""
     """Run one ALNS stage under a fixed docking mode."""
     _configure_instance_robustness(
         instance, same_truck_retrieval=same_truck_retrieval)
@@ -275,6 +280,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def collect_instance_paths(instance_dirs: Iterable[str | Path]) -> List[str]:
+    """。"""
     """根据目录列表收集算例文件路径。"""
     collected: list[str] = []
     for directory in instance_dirs:
@@ -295,6 +301,7 @@ def collect_instance_paths(instance_dirs: Iterable[str | Path]) -> List[str]:
 
 def filter_instance_paths(instance_paths: List[str], pattern: str | None) -> List[str]:
     """Filter instance paths by regex pattern applied to basename."""
+    """Filter instance paths by regex pattern applied to basename."""
     if not pattern:
         return instance_paths
     regex = re.compile(pattern)
@@ -310,6 +317,7 @@ def parse_seed_values(
     trials: int,
     seed_start: int,
 ) -> List[int]:
+    """Parse paired seeds. If --seeds not given, generate consecutive seeds."""
     """Parse paired seeds. If --seeds not given, generate consecutive seeds."""
     if seeds_text:
         seeds = []
@@ -333,6 +341,7 @@ def _extract_instance_stem(instance_path: str) -> str:
 
 
 def _extract_region_id(instance_path: str) -> int | None:
+    """Parse region id from name like R_40_25_1."""
     """Parse region id from name like R_40_25_1."""
     name = _extract_instance_stem(instance_path)
     match = re.match(r"R_(\d+)_", name)
@@ -359,6 +368,7 @@ def apply_instance_scope(
     regions_text: str,
     instance_name: str | None,
 ) -> List[str]:
+    """Apply instance scope selection."""
     """Apply instance scope selection."""
     if scope == "all":
         return instance_paths
@@ -388,10 +398,11 @@ def apply_instance_scope(
 
 
 # ==========================================================================
-# 辅助函数
+
 # ==========================================================================
 
 def count_drone_served_customers(solution) -> int:
+    """。"""
     """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
@@ -400,6 +411,7 @@ def count_drone_served_customers(solution) -> int:
 
 
 def serialize_truck_routes(solution) -> str:
+    """Serialize truck routes to JSON string."""
     """Serialize truck routes to JSON string."""
     payload = []
     for route in solution.truck_routes:
@@ -411,6 +423,7 @@ def serialize_truck_routes(solution) -> str:
 
 
 def serialize_drone_tasks(solution) -> str:
+    """Serialize drone tasks to JSON string."""
     """Serialize drone tasks to JSON string."""
     payload = []
     for task in solution.drone_tasks:
@@ -430,6 +443,7 @@ def run_single_experiment(
     mode_key: str,
     seed: int,
 ) -> Dict[str, Any]:
+    """。"""
     """运行单个模式配置实验。"""
 
     mode_config = DOCKING_MODES[mode_key]
@@ -622,6 +636,7 @@ def load_baseline_from_csv(
     output_csv: Path,
     seeds: List[int],
 ) -> Dict[tuple[str, int], float]:
+    """ CSV  (same_truck )。"""
     """从现有 CSV 加载基线成本 (same_truck 模式)。"""
     baseline_costs: dict[tuple[str, int], float] = {}
     if not output_csv.exists():
@@ -669,6 +684,7 @@ def run_docking_comparison(
     skip_baseline: bool = False,
     baseline_csv: Path | None = None,
 ) -> List[Dict[str, Any]]:
+    """。"""
     """运行对比实验并返回结果列表。"""
 
     print("=" * 80)
@@ -755,6 +771,7 @@ def run_docking_comparison(
 
 
 def write_summary_csv(results: Iterable[Dict[str, Any]], out_path: Path) -> None:
+    """Write summary with secondary caliber: mode-independent best-of-k."""
     """Write summary with secondary caliber: mode-independent best-of-k."""
     best_rows = build_best_instance_rows(results)
 
@@ -872,6 +889,7 @@ def _safe_std(values: List[float]) -> float:
 
 def _select_mode_best(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
     """Select best-of-k by min cost; tie-break by max drone-served customers."""
+    """Select best-of-k by min cost; tie-break by max drone-served customers."""
     valid = [
         r for r in rows
         if isinstance(r.get("best_cost"), (int, float))
@@ -890,6 +908,7 @@ def _select_mode_best(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
 
 def build_best_instance_rows(results: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Build primary-caliber rows: select the maximum saving trial per instance."""
+    """Build primary-caliber rows: select the maximum saving trial per instance."""
     paired_rows = build_paired_trial_rows(results)
     grouped: dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for row in paired_rows:
@@ -906,7 +925,7 @@ def build_best_instance_rows(results: Iterable[Dict[str, Any]]) -> List[Dict[str
             and math.isfinite(float(r["delta_pct_flex_vs_same"]))
         ]
         if valid_rows:
-            # 主口径：按最大 saving 选代表解；并列时优先更低 flexible cost。
+            # ： saving ； flexible cost。
             selected = max(
                 valid_rows,
                 key=lambda r: (
@@ -915,7 +934,7 @@ def build_best_instance_rows(results: Iterable[Dict[str, Any]]) -> List[Dict[str
                 ),
             )
         else:
-            # 若无有效 saving，回退到 flexible_cost 最小。
+            # saving， flexible_cost 。
             selected = min(rows, key=lambda r: float(r.get("flexible_cost", math.inf)))
 
         rows_out.append({
@@ -940,6 +959,7 @@ def build_best_instance_rows(results: Iterable[Dict[str, Any]]) -> List[Dict[str
 
 
 def write_best_instance_csv(rows: Iterable[Dict[str, Any]], out_path: Path) -> None:
+    """Write final per-instance rows using best-of-k for each mode."""
     """Write final per-instance rows using best-of-k for each mode."""
     rows_list = list(rows)
     fieldnames = [
@@ -972,6 +992,7 @@ def write_best_instance_csv(rows: Iterable[Dict[str, Any]], out_path: Path) -> N
 
 
 def build_paired_trial_rows(results: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Build paired rows per (instance, seed): flexible vs same-truck."""
     """Build paired rows per (instance, seed): flexible vs same-truck."""
     paired: dict[tuple[str, int], dict[str, Dict[str, Any]]] = defaultdict(dict)
     for item in results:

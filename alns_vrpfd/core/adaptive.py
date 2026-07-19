@@ -13,10 +13,10 @@ from alns_vrpfd.core.operators import DestroyOperator, RepairOperator
 RewardLabel = str
 
 _DEFAULT_SIGMA: Mapping[RewardLabel, float] = {
-    "global": 40.0,          # σ₁: 找到新的全局最优解 (increased)
-    "better": 18.0,          # σ₂: 显著改善当前解 (increased)
-    "slight_better": 12.0,   # σ₃: 略有改善或保持稳定 (increased)
-    "accepted_worse": 2.0,   # σ₄: 接受较差解但有助于跳出局部最优 (increased)
+    "global": 40.0,          # σ₁:  (increased)
+    "better": 18.0,          # σ₂:  (increased)
+    "slight_better": 12.0,   # σ₃:  (increased)
+    "accepted_worse": 2.0,   # σ₄:  (increased)
 }
 
 
@@ -91,11 +91,11 @@ class AdaptivePool:
         stats.total_improvement += max(delta_improvement, 0.0)
 
         base_reward = self.sigma.get(reward, 0.0)
-        # 对于接受的解(非rejected),根据改进量调整奖励
+        # (rejected),
         if reward in ["global", "better", "slight_better"]:
             shaped = base_reward * \
                 (1.0 + self.rho * max(delta_improvement, 0.0))
-        else:  # accepted_worse 不需要改进量加成
+        else:  # accepted_worse
             shaped = base_reward
         if time_normaliser > 0:
             shaped /= time_normaliser
@@ -144,6 +144,7 @@ class AdaptivePool:
 
 
 class AdaptiveOperatorManager:
+    """Manage adaptive selection and weight updates for ALNS operators."""
     """Manage adaptive selection and weight updates for ALNS operators."""
 
     def __init__(

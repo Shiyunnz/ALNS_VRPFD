@@ -50,9 +50,9 @@ class SANNCfg:
     alpha_credit: float = 0.65
     reward_scale: Optional[dict[str, float]] = None
     max_non_improve: Optional[int] = None
-    r_lower: float = 0.15  # r_L: 移除比例下限 (15%)
-    r_upper_small: float = 0.5  # r_U: 小规模实例移除比例上限 (50%)
-    r_upper_large: float = 0.3  # r_U: 大规模实例移除比例上限 (30%)
+    r_lower: float = 0.15  # r_L:  (15%)
+    r_upper_small: float = 0.5  # r_U:  (50%)
+    r_upper_large: float = 0.3  # r_U:  (30%)
     reheat_stall_trigger: int = 300
     reheat_acceptance_window: int = 80
     reheat_acceptance_min: float = 0.05
@@ -67,11 +67,11 @@ class SANNCfg:
     reheat_shake_fraction: float = 0.2
     reheat_shake_probability: float = 0.6
     reheat_temperature_scale: float = 1.0
-    # 逃脱算法参数 (从配置文件读取)
-    escape_enabled: bool = True          # 是否启用逃脱算法
-    escape_trigger_stall: int = 100      # 触发逃脱的停滞次数
-    escape_duration: int = 20            # 逃脱持续的迭代次数
-    quota_base_cap: int = 30  # 移除数量绝对上限 (公式中的30)
+    # ()
+    escape_enabled: bool = True
+    escape_trigger_stall: int = 100
+    escape_duration: int = 20
+    quota_base_cap: int = 30  # (30)
     weight_history: int = 30
     weight_decay: float = 0.02
     log_operator_metrics: bool = False
@@ -89,24 +89,24 @@ class SANNCfg:
     robust_cache_enabled: bool = True
     robust_cache_size: int = 4096
 
-    # 收敛增强参数 (新增)
-    # 动态冷却率
+    # ()
+
     dynamic_cooling_enabled: bool = True
-    improvement_threshold: float = 0.01  # 判定改善的阈值
-    cooling_slowdown_factor: float = 0.998  # 改善时减慢冷却
-    cooling_speedup_factor: float = 0.980  # 停滞时加速冷却
-    recent_improvement_window: int = 50  # 监控改善的窗口
+    improvement_threshold: float = 0.01
+    cooling_slowdown_factor: float = 0.998
+    cooling_speedup_factor: float = 0.980
+    recent_improvement_window: int = 50
 
-    # 多样化重启
+
     diversification_enabled: bool = True
-    diversification_trigger_stall: int = 500  # 触发多样化的停滞次数
-    diversification_restart_best_prob: float = 0.7  # 从最优解重启概率
-    diversification_destroy_ratio: float = 0.6  # 多样化销毁比例
+    diversification_trigger_stall: int = 500
+    diversification_restart_best_prob: float = 0.7
+    diversification_destroy_ratio: float = 0.6
 
-    # 自适应配额
+
     adaptive_quota_enabled: bool = True
-    quota_increase_on_stall: int = 100  # 停滞多少次后增加配额
-    quota_decrease_on_improve: bool = True  # 改善时减少配额
+    quota_increase_on_stall: int = 100
+    quota_decrease_on_improve: bool = True
 
     # Drone re-anchor local search (Step 6)
     drone_reanchor_ls_enabled: bool = True
@@ -150,6 +150,7 @@ SAConfig = SANNCfg
 
 
 class SimulatedAnnealingALNS:
+    """ALNS loop with simulated annealing acceptance and adaptive operator choice."""
     """ALNS loop with simulated annealing acceptance and adaptive operator choice."""
 
     def __init__(
@@ -234,6 +235,7 @@ class SimulatedAnnealingALNS:
 
     def _try_update_no_cross_truck(self, solution: Solution, cost: float) -> None:
         """Update best zero-cross-truck solution if this candidate qualifies."""
+        """Update best zero-cross-truck solution if this candidate qualifies."""
         if not self._track_no_cross_truck:
             return
         if cost >= self._best_no_cross_truck_cost:
@@ -315,7 +317,7 @@ class SimulatedAnnealingALNS:
         initial_temperature = self._initial_temperature(current_eval.total_cost)
         T = initial_temperature
         stall = 0
-        total_stall = 0  # 总停滞计数 (用于多样化重启)
+        total_stall = 0  # ()
         acceptance_window: Deque[bool] = deque()
         accepted_worse_count = 0
         self._base_quota_upper_ratio = self._cfg.r_upper()
@@ -335,12 +337,12 @@ class SimulatedAnnealingALNS:
         last_diversification_iter = -self._cfg.diversification_trigger_stall
         start_time = time.perf_counter()
 
-        # 收敛增强: 改善追踪
+        # :
         recent_improvements: Deque[float] = deque(
             maxlen=self._cfg.recent_improvement_window)
         dynamic_cooling_rate = self._cooling_rate_initial
-        adaptive_quota_bonus = 0  # 自适应配额奖励
-        last_best_iter = 0  # 上次找到最优解的迭代
+        adaptive_quota_bonus = 0
+        last_best_iter = 0
 
         # Escape Mechanism State
         escape_active = False
@@ -361,7 +363,7 @@ class SimulatedAnnealingALNS:
                 executed_iterations = iteration
                 break
 
-            # Check Escape Trigger (仅当启用时)
+            # Check Escape Trigger ()
             if self._cfg.escape_enabled and not escape_active and stall >= self._cfg.escape_trigger_stall:
                 escape_active = True
                 escape_counter = 0
@@ -414,7 +416,7 @@ class SimulatedAnnealingALNS:
                     if self._rng.random() < probability:
                         repair = self._biased_random_repair
 
-            # 自适应配额调整
+
             quota = self._sample_quota(adaptive_bonus=adaptive_quota_bonus)
             destroy_time = 0.0
             repair_time = 0.0
@@ -508,7 +510,7 @@ class SimulatedAnnealingALNS:
                     best_cost,
                 )
 
-            # 记录改善情况
+
             recent_improvements.append(improvement)
 
             if accepted:
@@ -539,9 +541,9 @@ class SimulatedAnnealingALNS:
                         best_feasible_solution = candidate.clone()
                         best_feasible_cost = candidate_eval.total_cost
                     last_best_iter = iteration
-                    total_stall = 0  # 重置总停滞
+                    total_stall = 0
 
-                    # 自适应配额: 改善时减少配额
+                    # :
                     if self._cfg.adaptive_quota_enabled and self._cfg.quota_decrease_on_improve:
                         adaptive_quota_bonus = max(0, adaptive_quota_bonus - 2)
 
@@ -576,7 +578,7 @@ class SimulatedAnnealingALNS:
                 stall += 1
                 total_stall += 1
 
-                # 自适应配额: 停滞时增加配额
+                # :
                 if self._cfg.adaptive_quota_enabled and stall > 0 and stall % self._cfg.quota_increase_on_stall == 0:
                     adaptive_quota_bonus = min(10, adaptive_quota_bonus + 1)
 
@@ -739,7 +741,7 @@ class SimulatedAnnealingALNS:
                     record[f"r_{entry['name']}"] = entry["weight"]
                 self._operator_weight_history.append(record)
 
-            # 动态冷却率调整
+
             if self._cfg.dynamic_cooling_enabled:
                 cooling_rate = self._dynamic_cooling_rate(
                     iteration, recent_improvements, stall)
@@ -842,7 +844,7 @@ class SimulatedAnnealingALNS:
                                 self._best_robust_certified = True
                                 last_best_iter = iteration
 
-            # 多样化重启 (长期停滞时触发)
+            # ()
             diversification_allowed = (
                 self._cfg.diversification_enabled
                 and iteration - last_diversification_iter >= self._cfg.diversification_trigger_stall
@@ -855,13 +857,13 @@ class SimulatedAnnealingALNS:
                     print(
                         f"Diversification restart at iteration {iteration + 1} (total_stall={total_stall})")
 
-                # 决定从哪里重启
+
                 if self._rng.random() < self._cfg.diversification_restart_best_prob:
                     restart_from = best.clone()
                 else:
                     restart_from = current.clone()
 
-                # 强力扰动
+
                 diversified = self._diversify(restart_from)
                 if diversified is not None:
                     div_eval = self._evaluator.evaluate_solution(diversified)
@@ -869,9 +871,9 @@ class SimulatedAnnealingALNS:
                         current = diversified
                         current_cost = div_eval.total_cost
                         stall = 0
-                        # 不重置total_stall，避免频繁多样化
+                        # total_stall，
 
-                        # 温度部分重置
+
                         T = initial_temperature * 0.5
 
                         if current_cost < best_cost and self._is_robust_feasible_best(
@@ -940,6 +942,7 @@ class SimulatedAnnealingALNS:
 
     def _feasibility_recovery_iteration_limit(self, configured_iterations: int) -> int:
         """Return a bounded recovery budget for runs that start infeasible."""
+        """Return a bounded recovery budget for runs that start infeasible."""
         scaled = 20 * self._n_customers * self._n_customers
         return max(configured_iterations, min(4000, max(200, scaled)))
 
@@ -950,6 +953,7 @@ class SimulatedAnnealingALNS:
         milp_time_limit: float = 30.0,
         milp_gap: float = 0.005,
     ) -> Solution:
+        """Run ALNS, then polish the best solution with mini-MILP."""
         """Run ALNS, then polish the best solution with mini-MILP."""
         best = self.run(initial, time_limit=time_limit)
         from alns_vrpfd.core.operators.mini_milp_polish import polish_with_mini_milp
@@ -977,6 +981,7 @@ class SimulatedAnnealingALNS:
         milp_time_limit: float = 30.0,
         milp_gap: float = 0.005,
     ) -> Solution:
+        """Run ALNS, then polish with the full MILP warm-start."""
         """Run ALNS, then polish with the full MILP warm-start."""
         best = self.run(initial, time_limit=time_limit)
         from alns_vrpfd.core.operators.milp_warm_start import polish_with_full_milp_warm_start
@@ -1214,6 +1219,7 @@ class SimulatedAnnealingALNS:
 
     def _robust_feasible_with_cache(self, solution: Solution) -> bool:
         """Fallback: full Evaluator-based robust check with cache."""
+        """Fallback: full Evaluator-based robust check with cache."""
         if self._robust_verifier is None:
             return True
         signature = self._drone_only_signature(solution)
@@ -1248,41 +1254,42 @@ class SimulatedAnnealingALNS:
         recent_improvements: Deque[float],
         stall: int
     ) -> float:
-        """动态调整冷却率
+        """
 
-        - 如果最近有显著改善，减慢冷却（保持探索）
-        - 如果长期停滞，加速冷却（促进收敛）
-        - 否则使用标准冷却率
+        - ，（）
+        - ，（）
+        - 
         """
         base_rate = self._cooling_rate_for(iteration)
 
         if not recent_improvements:
             return base_rate
 
-        # 计算最近平均改善
+
         avg_improvement = sum(recent_improvements) / len(recent_improvements)
 
-        # 如果有显著改善，减慢冷却
+        # ，
         if avg_improvement > self._cfg.improvement_threshold:
             return min(self._cfg.cooling_slowdown_factor, base_rate * 1.005)
 
-        # 如果停滞，加速冷却
+        # ，
         if stall > self._cfg.reheat_stall_trigger // 2:
             return max(self._cfg.cooling_speedup_factor, base_rate * 0.995)
 
         return base_rate
 
     def _diversify(self, solution: Solution) -> Optional[Solution]:
+        """"""
         """执行强力多样化扰动"""
         destroy_ratio = self._cfg.diversification_destroy_ratio
         quota = max(3, int(round(destroy_ratio * self._n_customers)))
 
         try:
-            # 使用shake_destroy进行大规模破坏
+            # shake_destroy
             destroyed, pool = self._shake_destroy.apply(
                 solution.clone(), quota)
 
-            # 使用随机修复
+
             if self._biased_random_repair:
                 repaired = self._biased_random_repair.apply(
                     destroyed, pool.customers)
@@ -1323,31 +1330,31 @@ class SimulatedAnnealingALNS:
         delta = candidate_cost - current_cost
         improvement = 0.0
 
-        # σ₁: 找到新的全局最优解
+        # σ₁:
         if candidate_finite and best_finite and candidate_cost < best_cost:
             denom = max(abs(best_cost), 1.0)
             improvement = max(0.0, (best_cost - candidate_cost) / denom)
             return "global", True, improvement
 
-        # σ₂ 和 σ₃: 区分显著改善和略有改善
+        # σ₂  σ₃:
         if delta <= 0:
             denom = max(abs(current_cost), 1.0)
             improvement = max(0.0, -delta / denom)
 
-            # 设置阈值区分显著改善和略有改善
-            # 如果改善幅度 > 1%(可调整),则为显著改善(σ₂)
-            # 否则为略有改善(σ₃)
+
+            # > 1%(),(σ₂)
+            # (σ₃)
             improvement_threshold = 0.01
             if improvement > improvement_threshold:
-                return "better", True, improvement  # σ₂: 显著改善
+                return "better", True, improvement  # σ₂:
             else:
-                return "slight_better", True, improvement  # σ₃: 略有改善
+                return "slight_better", True, improvement  # σ₃:
 
-        # σ₄: 接受较差解(模拟退火准则)
+        # σ₄: ()
         if temperature > 0 and self._rng.random() < math.exp(-delta / max(temperature, 1e-9)):
             return "accepted_worse", True, 0.0
 
-        # 拒绝解(不计入奖励更新,但在统计中仍可追踪)
+        # (,)
         return "accepted_worse", False, 0.0
 
     def _search_cost(self, solution: Solution, eval_result: Any) -> float:
@@ -1443,7 +1450,7 @@ class SimulatedAnnealingALNS:
 
     def _initial_temperature(self, cost: float) -> float:
         if not math.isfinite(cost):
-            # 当初始解不可行时，使用较高的默认温度以允许更多探索
+            # ，
             return max(self._cfg.temperature_min, 50.0)
         delta = (self._cfg.w_percent / 100.0) * abs(cost)
         if delta <= 0.0:
@@ -1452,23 +1459,23 @@ class SimulatedAnnealingALNS:
 
     def _sample_quota(self, adaptive_bonus: int = 0) -> int:
         """
-        采样移除客户数量 β。
+         β。
 
-        基础公式: β ∈ [max{3, r_L|C|}, min{30, r_U|C|}]
+        : β ∈ [max{3, r_L|C|}, min{30, r_U|C|}]
 
-        其中:
-        - |C| = self._n_customers (客户总数)
-        - r_L = self._cfg.r_lower (移除比例下限, 默认0.15)
-        - r_U = self._cfg.r_upper() (移除比例上限, 小规模0.5/大规模0.3)
-        - 30 = self._cfg.quota_base_cap (绝对上限)
+        :
+        - |C| = self._n_customers ()
+        - r_L = self._cfg.r_lower (, 0.15)
+        - r_U = self._cfg.r_upper() (, 0.5/0.3)
+        - 30 = self._cfg.quota_base_cap ()
 
-        在重热(reheat)阶段，配额会动态放大以增加探索性。
+        (reheat)，。
         """
-        # 基础下限: max{3, r_L|C|}
+        # : max{3, r_L|C|}
         lower = max(3, int(self._cfg.r_lower * self._n_customers))
 
-        # 基础上限: min{quota_base_cap, r_U|C|}
-        base_cap = max(1, self._cfg.quota_base_cap)  # 默认30
+        # : min{quota_base_cap, r_U|C|}
+        base_cap = max(1, self._cfg.quota_base_cap)  # 30
         base_upper = min(base_cap, int(
             self._cfg.r_upper() * self._n_customers))
         dynamic_upper = int(round(self._quota_upper_ratio * self._n_customers))
@@ -1482,7 +1489,7 @@ class SimulatedAnnealingALNS:
             upper = lower
         upper = max(lower, upper)
 
-        # 应用自适应配额奖励
+
         if adaptive_bonus > 0:
             upper = min(upper + adaptive_bonus, self._n_customers)
 
@@ -1720,6 +1727,7 @@ class SimulatedAnnealingALNS:
 
     def _optimize_drone_reanchor(self, solution: Solution) -> Solution:
         """Apply drone task split/merge/reanchor local search."""
+        """Apply drone task split/merge/reanchor local search."""
         from alns_vrpfd.core.operators.drone_reanchor import DroneTaskSplitMergeLocalSearch
 
         ls = DroneTaskSplitMergeLocalSearch(
@@ -1772,6 +1780,7 @@ class SimulatedAnnealingALNS:
 
     def _construct_multi_customer_sorties(self, solution: Solution) -> Solution:
         """Construct multi-customer cross-truck drone sorties (Step 8)."""
+        """Construct multi-customer cross-truck drone sorties (Step 8)."""
         from alns_vrpfd.core.operators.drone_reanchor import MultiCustomerSortieConstructor
 
         constructor = MultiCustomerSortieConstructor(
@@ -1814,6 +1823,7 @@ class SimulatedAnnealingALNS:
         return solution
 
     def _synchronized_truck_polish(self, solution: Solution) -> Solution:
+        """Synchronized truck-route polish after drone sortie changes (Step 9)."""
         """Synchronized truck-route polish after drone sortie changes (Step 9)."""
         from alns_vrpfd.core.operators.truck_route_polish import SynchronizedTruckRoutePolish
 
@@ -1975,6 +1985,7 @@ class SimulatedAnnealingALNS:
 
     def _try_merge_truck_routes(self, solution: Solution) -> Solution:
         """Try merging multiple truck routes into one if beneficial."""
+        """Try merging multiple truck routes into one if beneficial."""
         if len(solution.truck_routes) <= 1:
             return solution
 
@@ -2068,6 +2079,7 @@ class SimulatedAnnealingALNS:
         return solution
 
     def _optimize_truck_route(self, solution: Solution) -> Solution:
+        """Comprehensive truck route optimization."""
         """Comprehensive truck route optimization."""
         truck_dist = self._evaluator._instance.distance_matrix('truck')
         node_index = self._build_node_index()
@@ -2183,6 +2195,7 @@ class SimulatedAnnealingALNS:
 
     def _try_nearest_neighbor(self, route, truck_dist, node_index):
         """Try nearest neighbor heuristic and keep if better."""
+        """Try nearest neighbor heuristic and keep if better."""
         customers = list(route.customers())
         if len(customers) < 4:
             return route
@@ -2239,6 +2252,7 @@ class SimulatedAnnealingALNS:
 
     def _route_distance(self, nodes, truck_dist, node_index):
         """Calculate total route distance."""
+        """Calculate total route distance."""
         total = 0.0
         for i in range(len(nodes) - 1):
             idx1 = node_index.get(nodes[i], -1)
@@ -2248,6 +2262,7 @@ class SimulatedAnnealingALNS:
         return total
 
     def _apply_2opt(self, solution: Solution) -> Solution:
+        """Apply 2-opt improvement to truck routes."""
         """Apply 2-opt improvement to truck routes."""
         truck_dist = self._evaluator._instance.distance_matrix('truck')
         node_index = self._build_node_index()
@@ -2295,6 +2310,7 @@ class SimulatedAnnealingALNS:
 
     def _build_node_index(self) -> dict:
         """Build mapping from node ID to matrix index."""
+        """Build mapping from node ID to matrix index."""
         node_ids = self._evaluator._instance.all_node_ids()
         return {node: idx for idx, node in enumerate(node_ids)}
 
@@ -2314,6 +2330,7 @@ class SimulatedAnnealingALNS:
         return payloads
 
     def _optimize_drone_tasks(self, solution: Solution) -> Solution:
+        """Optimize drone tasks by converting single to multi-customer where possible."""
         """Optimize drone tasks by converting single to multi-customer where possible."""
         if not solution.drone_tasks:
             return solution
@@ -2370,6 +2387,7 @@ class SimulatedAnnealingALNS:
 
     def _calc_drone_distance(self, launch: int, customers: list, retrieve: int, dist_matrix, node_index) -> float:
         """Calculate total drone distance."""
+        """Calculate total drone distance."""
         nodes = [launch] + customers + [retrieve]
         total = 0.0
         for i in range(len(nodes) - 1):
@@ -2381,6 +2399,7 @@ class SimulatedAnnealingALNS:
         return total
 
     def _remove_customer_from_truck(self, solution: Solution, customer_id: int) -> None:
+        """Remove a customer from truck routes."""
         """Remove a customer from truck routes."""
         for route in solution.truck_routes:
             route.nodes = [n for n in route.nodes if n != customer_id]
@@ -2533,6 +2552,7 @@ class SimulatedAnnealingALNS:
 
     def _truck_distance_saved(self, solution: Solution, customers: list, truck_dist, node_index) -> float:
         """Calculate truck distance saved by removing customers."""
+        """Calculate truck distance saved by removing customers."""
         saved = 0.0
         for route in solution.truck_routes:
             nodes = route.nodes
@@ -2553,6 +2573,7 @@ class SimulatedAnnealingALNS:
         return saved
 
     def _try_truck_launched_drone(self, solution: Solution) -> Solution:
+        """Try creating truck-launched drone tasks for better coordination."""
         """Try creating truck-launched drone tasks for better coordination."""
         demands = self._evaluator._instance.customer_manager.demands()
         drone_cap = self._evaluator._instance.vehicle_specs['drone'].capacity
@@ -2691,6 +2712,7 @@ class SimulatedAnnealingALNS:
 
     def _cross_exchange(self, solution: Solution) -> Solution:
         """Cross-exchange: swap segments between two routes."""
+        """Cross-exchange: swap segments between two routes."""
         if len(solution.truck_routes) < 2:
             return solution
 
@@ -2753,6 +2775,7 @@ class SimulatedAnnealingALNS:
 
     def _string_relocate(self, solution: Solution) -> Solution:
         """Relocate a string (consecutive sequence) of customers to another position."""
+        """Relocate a string (consecutive sequence) of customers to another position."""
         if not solution.truck_routes:
             return solution
 
@@ -2803,6 +2826,7 @@ class SimulatedAnnealingALNS:
         return best_solution
 
     def _try_relocate_customer(self, solution: Solution) -> Solution:
+        """Try relocating single customers to better positions (inter-route)."""
         """Try relocating single customers to better positions (inter-route)."""
         if len(solution.truck_routes) < 2:
             return solution
@@ -2855,6 +2879,7 @@ class SimulatedAnnealingALNS:
         return best_solution
 
     def _path_relinking(self, current: Solution, target: Solution) -> Solution:
+        """Path relinking: generate intermediate solutions between current and target."""
         """Path relinking: generate intermediate solutions between current and target."""
         if not current.truck_routes or not target.truck_routes:
             return current

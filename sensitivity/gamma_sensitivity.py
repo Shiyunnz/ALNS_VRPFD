@@ -1,12 +1,12 @@
 """
-Gamma (能量不确定性预算) 参数敏感性分析
+Gamma () 
 
-分析不同gamma值对以下指标的影响:
-1. 总成本 (Total Cost)
-2. 相对基线成本节省百分比 (Cost Saving vs Baseline %)
-3. 无人机服务的客户点数量 (Drone-served Customers)
+gamma:
+1.  (Total Cost)
+2.  (Cost Saving vs Baseline %)
+3.  (Drone-served Customers)
 
-基准: gamma=0 作为baseline
+: gamma=0 baseline
 """
 
 from __future__ import annotations
@@ -47,6 +47,7 @@ from sensitivity.instance_selector import collect_instance_paths_with_scope
 
 def _infer_size(instance) -> str:
     """Infer 'small'|'medium'|'large' based on customer count."""
+    """Infer 'small'|'medium'|'large' based on customer count."""
     num_customers = len(instance.customer_manager.customer_ids())
     if num_customers <= 15:
         return "small"
@@ -56,6 +57,7 @@ def _infer_size(instance) -> str:
 
 
 def _safe_mean(values: List[float]) -> float:
+    """Compute mean of values, returning 0.0 if list is empty."""
     """Compute mean of values, returning 0.0 if list is empty."""
     filtered = [v for v in values if isinstance(v, (int, float)) and math.isfinite(v)]
     return sum(filtered) / len(filtered) if filtered else 0.0
@@ -67,49 +69,49 @@ def filter_against_expected_trend(
     max_remove: int = 3
 ) -> tuple[List[float], int]:
     """
-    过滤与预期趋势相反的异常值。
-    
-    对于gamma敏感性分析:
-    - gamma > 0 时，成本应该增加（cost_increase_vs_baseline > 0）
-    - 如果某个算例成本反而下降（负值）或增加很少，则视为异常
-    
+    。
+
+    gamma:
+    - gamma > 0 ，（cost_increase_vs_baseline > 0）
+    - （），
+
     Args:
-        values: 成本增加率列表
-        gamma: 当前gamma值
-        min_increase_threshold: 最小增加率阈值（%），低于此值视为异常
-        max_remove: 最多过滤的数量，默认2个
-    
+        values: 
+        gamma: gamma
+        min_increase_threshold: （%），
+        max_remove: ，2
+
     Returns:
-        (过滤后的列表, 被移除的异常值数量)
+        (, )
     """
     valid = [v for v in values if isinstance(v, (int, float)) and math.isfinite(v)]
     
     if gamma == 0:
-        # baseline不需要过滤
+        # baseline
         return valid, 0
     
     if len(valid) < 2:
         return valid, 0
     
-    # 对于 gamma > 0，期望成本增加
-    # 过滤掉成本下降（负值）或增加太少的结果
-    # 使用中位数作为参考，过滤掉远低于中位数的值
+    # gamma > 0，
+    # （）
+    # ，
     sorted_vals = sorted(valid)
     median = sorted_vals[len(sorted_vals) // 2]
     
-    # 如果中位数本身就是负的或很小，说明大多数结果都有问题，不过滤
+    # ，，
     if median < min_increase_threshold:
         return valid, 0
     
-    # 标记异常值（按严重程度排序）
+    # （）
     outliers = []
     for i, v in enumerate(valid):
-        if v < 0:  # 成本下降，最严重
-            outliers.append((i, v, abs(v) + 100))  # 优先级最高
-        elif v < min_increase_threshold and v < median * 0.3:  # 增加太少且远低于中位数
-            outliers.append((i, v, median - v))  # 按偏离程度排序
+        if v < 0:  # ，
+            outliers.append((i, v, abs(v) + 100))
+        elif v < min_increase_threshold and v < median * 0.3:
+            outliers.append((i, v, median - v))
     
-    # 按严重程度排序，只移除最严重的 max_remove 个
+    # ， max_remove
     outliers.sort(key=lambda x: x[2], reverse=True)
     indices_to_remove = set(x[0] for x in outliers[:max_remove])
     
@@ -125,6 +127,7 @@ def _safe_mean_with_trend_filter(
     min_increase_threshold: float = 0.5,
     max_remove: int = 2
 ) -> tuple[float, int]:
+    """，。"""
     """计算平均值，过滤与预期趋势相反的异常值。"""
     filtered, removed = filter_against_expected_trend(values, gamma, min_increase_threshold, max_remove)
     mean_val = sum(filtered) / len(filtered) if filtered else 0.0
@@ -136,18 +139,18 @@ _default_config = ALNSConfig()
 
 
 # ==========================================================================
-# 实验配置
+
 # ==========================================================================
 
-# Gamma值水平用于实验横坐标
-# 基准为 gamma=0（无鲁棒性），其他值用于测试
+# Gamma
+# gamma=0（），
 GAMMA_LEVELS = [0, 1, 2, 3]
 BASELINE_GAMMA = 0
 
-# 默认算例目录
+
 DEFAULT_INSTANCE_DIRS = [Path("data/Instance10")]
 
-# ALNS 运行参数 - 固定为 2000 次迭代
+# ALNS  -  2000
 ITERATIONS = 2000
 TIME_LIMIT = _default_config.time_limit
 SEED = _default_config.seed
@@ -160,6 +163,7 @@ OUTPUT_CSV = OUTPUT_DIR / "gamma_sensitivity_results.csv"
 
 
 def _build_sa_config(instance) -> SANNCfg:
+    """YAMLSANNCfg"""
     """从YAML配置构建SANNCfg"""
     sa_config_dict = _default_config.build_sa_config_dict()
     sa_config_dict['size'] = _infer_size(instance)
@@ -232,6 +236,7 @@ def collect_instance_paths(
     regions: str | None,
     instance_name: str | None,
 ) -> List[str]:
+    """。"""
     """根据目录列表收集算例文件路径。"""
     return collect_instance_paths_with_scope(
         instance_dirs,
@@ -242,10 +247,11 @@ def collect_instance_paths(
 
 
 # ==========================================================================
-# 辅助函数
+
 # ==========================================================================
 
 def count_drone_served_customers(solution) -> int:
+    """。"""
     """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
@@ -259,6 +265,7 @@ def run_single_experiment(
     *,
     same_truck_retrieval: bool = False,
 ) -> Dict[str, Any]:
+    """gamma。"""
     """运行单个gamma配置实验。"""
 
     print(f"  Running: gamma={gamma}, same_truck={same_truck_retrieval}")
@@ -413,6 +420,7 @@ def run_single_experiment(
 
 
 def _choose_best_result(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
+    """ best_cost  + best_drone_customers （）。"""
     """按 best_cost 最小 + best_drone_customers 最大（平局）选择最佳记录。"""
     if not rows:
         return None
@@ -434,6 +442,7 @@ def _choose_best_result(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
 def load_baseline_from_csv(
     instance_paths: List[str],
 ) -> tuple[Dict[str, float], Dict[str, Dict[str, Any]]]:
+    """ CSV 。"""
     """从现有 CSV 加载基线成本与基线最佳记录。"""
     baseline_costs: Dict[str, float] = {path: math.inf for path in instance_paths}
     baseline_rows: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
@@ -489,6 +498,7 @@ def run_gamma_sensitivity_analysis(
     skip_baseline: bool = False,
     trials: int = 5,
 ) -> List[Dict[str, Any]]:
+    """gamma。"""
     """运行gamma参数敏感度分析并返回结果列表。"""
 
     if gamma_levels is None:
@@ -512,7 +522,7 @@ def run_gamma_sensitivity_analysis(
     baseline_costs = {}  # instance_path -> best_cost
     baseline_results_map = {}  # instance_path -> result dict
 
-    # 1. 运行 Baseline (gamma=0) 获取基准 Costs
+    # 1.  Baseline (gamma=0)  Costs
     print(f"\nPhase 1: Handling Baseline (Gamma={BASELINE_GAMMA})...")
     
     if skip_baseline:
@@ -610,14 +620,14 @@ def run_gamma_sensitivity_analysis(
                     continue
                 result = best_test_res
 
-            # Calculate Cost Increase vs Baseline (正值表示成本增加)
+            # Calculate Cost Increase vs Baseline ()
             base_cost = baseline_costs.get(instance_path, math.inf)
             current_cost = result.get("best_cost", math.inf)
 
             result["baseline_best_cost"] = base_cost
 
             if math.isfinite(base_cost) and base_cost > 0 and math.isfinite(current_cost):
-                # 成本增加率 = (当前成本 - 基线成本) / 基线成本 * 100
+                # = ( - ) /  * 100
                 increase = (current_cost - base_cost) / base_cost * 100.0
                 result["cost_increase_vs_baseline"] = increase
             else:

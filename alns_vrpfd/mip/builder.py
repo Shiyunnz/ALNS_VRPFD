@@ -1,6 +1,6 @@
 """Mixed-integer linear programming (MILP) model builder using Gurobi.
 
-根据 milp_formulation.tex 完全重构的版本。
+ milp_formulation.tex 。
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from typing import List
 
 @dataclass
 class ProblemData:
+    """Static sets and parameters extracted from the instance description."""
     """Static sets and parameters extracted from the instance description."""
 
     depots: Tuple[int, int]
@@ -59,6 +60,7 @@ class ProblemData:
 @dataclass
 class VariableContainer:
     """Hold references to Gurobi variables created for the MILP model."""
+    """Hold references to Gurobi variables created for the MILP model."""
 
     x_truck: gp.tupledict
     y_drone: gp.tupledict
@@ -80,6 +82,7 @@ class VariableContainer:
 
 @dataclass
 class MIPArtifacts:
+    """Return bundle containing the model, data, and variable handles."""
     """Return bundle containing the model, data, and variable handles."""
 
     model: gp.Model
@@ -112,6 +115,7 @@ def build_mip_model(
     cost_normalized: bool = True,
 ) -> MIPArtifacts:
     """Build the complete MILP model following milp_formulation.tex."""
+    """Build the complete MILP model following milp_formulation.tex."""
 
     if gp is None or GRB is None:
         raise RuntimeError(
@@ -140,7 +144,7 @@ def build_mip_model(
 
     if use_piecewise_energy:
         try:
-            # 如果调用方使用了默认分段数(10)，则尝试从 YAML 配置覆盖它，方便集中管理
+            # (10)， YAML ，
             if num_segments == 10:
                 try:
                     from alns_vrpfd.utils.config_loader import ALNSConfig
@@ -148,7 +152,7 @@ def build_mip_model(
                     cfg = ALNSConfig()
                     num_segments = int(cfg.piecewise_energy_segments)
                 except Exception:
-                    # 忽略配置加载错误，继续使用传入的 num_segments
+                    # ， num_segments
                     pass
 
             from .piecewise_energy import add_piecewise_linear_energy_constraints
@@ -207,6 +211,7 @@ def set_distance_tardiness_objective(
     cost_rho: float = 1.0,
     cost_normalized: bool = True,
 ) -> None:
+    """Apply the distance-plus-tardiness objective defined in Eq. (1)."""
     """Apply the distance-plus-tardiness objective defined in Eq. (1)."""
 
     model = artifacts.model
@@ -393,6 +398,7 @@ def _warn_if_delay_pwl_is_coarse(
     use_three_piece_delay: bool,
 ) -> None:
     """Warn when delay PWL spacing is too coarse near zero."""
+    """Warn when delay PWL spacing is too coarse near zero."""
     if use_three_piece_delay:
         x1 = xs[1] if len(xs) > 1 else None
         if x1 is not None and x1 > max(1e-6, 0.01 * max_delay):
@@ -551,7 +557,7 @@ def _create_decision_variables(model: gp.Model, data: ProblemData) -> VariableCo
         data.customers, data.trucks, vtype=GRB.CONTINUOUS, lb=0.0, name="tau_truck")
     tardiness_drone = model.addVars(
         data.customers, data.drones, vtype=GRB.CONTINUOUS, lb=0.0, name="tau_drone")
-    # 延误成本变量（用于 PWL 映射）
+    # （ PWL ）
     tardiness_cost_truck = model.addVars(
         data.customers, data.trucks, vtype=GRB.CONTINUOUS, lb=0.0, name="delay_cost_truck")
     tardiness_cost_drone = model.addVars(
@@ -592,12 +598,14 @@ def _finite_time(value: float, fallback: float) -> float:
 
 def _paper_truck_time_m(data: ProblemData, i: int, j: int, depot_deadline: float) -> float:
     """Paper bound M^T_ij = l_i + t^T_ij."""
+    """Paper bound M^T_ij = l_i + t^T_ij."""
     latest_i = _latest_or_depot_deadline(data, i, depot_deadline)
     travel = _finite_time(data.truck_time[(i, j)], depot_deadline)
     return latest_i + travel
 
 
 def _paper_drone_time_m(data: ProblemData, i: int, j: int, depot_deadline: float) -> float:
+    """Paper bound M^D_ij = l_i + t^D_ij."""
     """Paper bound M^D_ij = l_i + t^D_ij."""
     latest_i = _latest_or_depot_deadline(data, i, depot_deadline)
     travel = _finite_time(data.drone_time[(i, j)], depot_deadline)
@@ -606,15 +614,18 @@ def _paper_drone_time_m(data: ProblemData, i: int, j: int, depot_deadline: float
 
 def _paper_sync_m(data: ProblemData, i: int, depot_deadline: float) -> float:
     """Paper synchronization bound M^S_i = l_i."""
+    """Paper synchronization bound M^S_i = l_i."""
     return _latest_or_depot_deadline(data, i, depot_deadline)
 
 
 def _paper_truck_load_lower_m(data: ProblemData, i: int) -> float:
     """Paper bound M^T_i = Q^T - q_i."""
+    """Paper bound M^T_i = Q^T - q_i."""
     return max(0.0, data.truck_capacity - data.demand.get(i, 0.0))
 
 
 def _paper_truck_load_upper_m(data: ProblemData, i: int) -> float:
+    """Paper bound \\bar{M}^T_i = Q^T + Q^D + q_i."""
     """Paper bound \\bar{M}^T_i = Q^T + Q^D + q_i."""
     return data.truck_capacity + data.drone_capacity + data.demand.get(i, 0.0)
 
@@ -627,6 +638,7 @@ def add_core_constraints(
     big_m_energy: float = 20.0,
     use_piecewise_energy: bool = True,
 ) -> None:
+    """ milp_formulation.tex 。"""
     """根据 milp_formulation.tex 添加所有核心约束。"""
 
     model = artifacts.model
@@ -765,14 +777,14 @@ def add_core_constraints(
             for k in data.trucks for d in data.drones for h in data.v_plus if (j, h) in arc_set
         )
 
-        # Eq (9): 访问下界 - 至少有一辆车访问（除非被 sync 或 z_out 松弛）
-        # 根据 tex: truck_v + drone_v >= 1 - sync - z_out
+        # Eq (9):  - （ sync  z_out ）
+        # tex: truck_v + drone_v >= 1 - sync - z_out
         model.addConstr(
             truck_visit + drone_visit >= 1 - sync_sum - z_out_sum,
             name=f"visit_lower[{j}]"
         )
 
-        # Eq (10): 访问上界 - 最多一辆车访问（被 sync 和 z_out 松弛）
+        # Eq (10):  - （ sync  z_out ）
         model.addConstr(
             truck_visit + drone_visit <= 1 + sync_sum + z_out_sum,
             name=f"visit_upper[{j}]"
@@ -1034,27 +1046,27 @@ def add_core_constraints(
                 name=f"drone_empty[{j},{d}]"
             )
 
-    # Eq (36): Drone capacity - 每个节点的负载不能超过无人机容量
-    # 这确保每个独立任务的负载都在容量范围内
+    # Eq (36): Drone capacity -
+
     for i in data.nodes:
         for d in data.drones:
             model.addConstr(
                 vars.load_drone_minus[i, d] <= data.drone_capacity, name=f"drone_capacity[{i},{d}]")
-            # 非负约束
+
             model.addConstr(
                 vars.load_drone_minus[i, d] >= 0.0, name=f"drone_load_nonneg[{i},{d}]")
 
-    # Eq (37): 仓库初始负载设为0
-    # 无人机从仓库发射时，负载将在发射约束中设置
+    # Eq (37): 0
+    # ，
     for d in data.drones:
         model.addConstr(
             vars.load_drone_plus[start_depot, d] == 0.0,
             name=f"drone_initial_load[{d}]"
         )
 
-    # 注意：tight droneLoad + droneEmpty 约束已替代旧的 v_served 方法。
-    # droneEmpty 从回收节点向后传播，通过 arc 约束和 tight 客户节点约束，
-    # 迫使发射点负载等于该 sortie 所有客户需求之和 —— 不再需要显式的 v_served。
+    # ：tight droneLoad + droneEmpty  v_served 。
+    # droneEmpty ， arc  tight ，
+    # sortie  ——  v_served。
 
     # ========== 7. Energy Constraints ==========
 
@@ -1063,23 +1075,23 @@ def add_core_constraints(
 
     if not use_piecewise_energy:
         # Eq (39) & (40): Energy flow (nominal and deviation)
-        # 修改版本：当从发射点出发时，能耗从0开始（每个任务独立计算）
-        # 这与 ALNS 的实现一致：每个 DroneTask 的能耗是独立检查的
+        # ：，0（）
+        # ALNS ： DroneTask
         for (i, j) in arc_set:
             energy_nom = data.energy_nominal[(i, j)]
             energy_dev = data.energy_deviation[(i, j)]
             for d in data.drones:
                 u_sum = gp.quicksum(vars.u[i, k, d] for k in data.trucks)
                 for gamma in data.gamma_range:
-                    # 标准能耗流约束（非发射点）
-                    # 当 u_sum=1 时，这个约束被松弛
+                    # （）
+                    # u_sum=1 ，
                     model.addConstr(
                         vars.energy_state_gamma[j, d, gamma] >= vars.energy_state_gamma[i, d,
                                                                                         gamma] + energy_nom - big_m_energy * (1 - vars.y_drone[i, j, d]) - big_m_energy * u_sum,
                         name=f"energy_flow_nominal[{i},{j},{d},{gamma}]"
                     )
-                    # 发射点能耗流约束（能耗从0开始）
-                    # 只有当 u_sum=1 且 y[i,j]=1 时约束才有效
+                    # （0）
+                    # u_sum=1  y[i,j]=1
                     model.addConstr(
                         vars.energy_state_gamma[j, d, gamma] >= energy_nom - big_m_energy * (
                             1 - vars.y_drone[i, j, d]) - big_m_energy * (1 - u_sum),
@@ -1096,7 +1108,7 @@ def add_core_constraints(
                                 1 - vars.y_drone[i, j, d]) - big_m_energy * (1 - u_sum),
                             name=f"energy_flow_launch_dev[{i},{j},{d},{gamma}]"
                         )
-        # # 原始版本（已注释）：不处理发射点重置，能耗跨任务累积
+        # # （）：，
         # for (i, j) in arc_set:
         #     energy_nom = data.energy_nominal[(i, j)]
         #     energy_dev = data.energy_deviation[(i, j)]
@@ -1115,7 +1127,7 @@ def add_core_constraints(
         #                 )
 
     # Eq (41): Battery capacity constraint
-    # 检查每个节点的能耗是否超过电池容量
+
     for j in data.v_plus:
         for d in data.drones:
             model.addConstr(
@@ -1125,21 +1137,21 @@ def add_core_constraints(
                 name=f"energy_capacity[{j},{d}]"
             )
 
-    # Eq (42): 发射点能耗初始化约束
-    # 当无人机在节点 i 发射时 (u[i,k,d]=1)，该节点发出的飞行弧的能耗
-    # 应该只包含该弧本身的能耗，而不包含之前任务的累积能耗。
-    # 这通过在发射节点设置 energy_state_gamma[i,d,gamma] = 0 实现，
-    # 但需要用 Big-M 方法处理发射和非发射的情况。
+    # Eq (42):
+    # i  (u[i,k,d]=1)，
+    # ，。
+    # energy_state_gamma[i,d,gamma] = 0 ，
+    # Big-M 。
     #
-    # 注意：由于同一个节点可能同时是上一任务的回收点和下一任务的发射点，
-    # 我们不能简单地把 energy_state_gamma[i] 设为 0。
+    # ：，
+    # energy_state_gamma[i]  0。
     #
-    # 更好的方法是：修改能耗流约束，当从发射点出发时，能耗从 0 开始累加。
-    # 即：e[j] >= e[i] + energy_use - M*(1-y[i,j]) 变为
-    #     e[j] >= 0 + energy_use - M*(1-y[i,j]) 当 u[i,k,d]=1 时
+    # ：，， 0 。
+    # ：e[j] >= e[i] + energy_use - M*(1-y[i,j])
+    # e[j] >= 0 + energy_use - M*(1-y[i,j])  u[i,k,d]=1
     #
-    # 这个逻辑在 piecewise_energy.py 中的能耗流约束里实现。
-    # 这里我们只需要设置仓库（depot）的初始能耗为 0。
+    # piecewise_energy.py 。
+    # （depot） 0。
     for d in data.drones:
         for gamma in data.gamma_range:
             model.addConstr(

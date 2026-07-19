@@ -1,4 +1,4 @@
-"""YAML配置文件加载工具"""
+"""YAML configuration loader."""
 
 from __future__ import annotations
 
@@ -10,20 +10,20 @@ import yaml
 
 
 def find_config_file(config_name: str = "alns_config.yaml") -> Path:
-    """查找配置文件路径
+    """
 
-    搜索顺序:
-    1. 当前工作目录
-    2. 当前工作目录的config子目录
-    3. 项目根目录
-    4. 项目根目录的config子目录
+    :
+    1. 
+    2. config
+    3. 
+    4. config
     """
     search_paths = [
         Path.cwd() / config_name,
         Path.cwd() / "config" / config_name,
     ]
 
-    # 尝试找到项目根目录 (包含alns_vrpfd的目录)
+    # (alns_vrpfd)
     current = Path(__file__).resolve()
     for parent in current.parents:
         if (parent / "alns_vrpfd").exists():
@@ -43,13 +43,13 @@ def find_config_file(config_name: str = "alns_config.yaml") -> Path:
 
 
 def load_config(config_path: Optional[str | Path] = None) -> Dict[str, Any]:
-    """加载YAML配置文件
+    """YAML
 
     Args:
-        config_path: 配置文件路径，如果为None则自动查找
+        config_path: ，None
 
     Returns:
-        配置字典
+        
     """
     if config_path is None:
         config_path = find_config_file()
@@ -65,15 +65,15 @@ def load_config(config_path: Optional[str | Path] = None) -> Dict[str, Any]:
 
 
 def get_nested(config: Dict, *keys, default=None):
-    """安全获取嵌套配置值
+    """
 
     Args:
-        config: 配置字典
-        *keys: 嵌套键路径
-        default: 默认值
+        config: 
+        *keys: 
+        default: 
 
     Returns:
-        配置值或默认值
+        
     """
     result = config
     for key in keys:
@@ -85,6 +85,7 @@ def get_nested(config: Dict, *keys, default=None):
 
 
 class ALNSConfig:
+    """ALNS，"""
     """ALNS配置类，提供便捷的配置访问接口"""
 
     def __init__(self, config_path: Optional[str | Path] = None):
@@ -92,6 +93,7 @@ class ALNSConfig:
         self._validate()
 
     def _validate(self):
+        """"""
         """验证必要的配置项"""
         required_sections = ["simulated_annealing", "adaptive_selection"]
         for section in required_sections:
@@ -108,12 +110,14 @@ class ALNSConfig:
 
     @property
     def raw(self) -> Dict[str, Any]:
+        """"""
         """返回原始配置字典"""
         return self._config
 
-    # ========== 基础设置 ==========
+    # ==========  ==========
     @property
     def seed(self) -> Optional[int]:
+        """，None """
         """返回随机种子，None 表示使用系统时间"""
         return get_nested(self._config, "general", "seed", default=None)
 
@@ -125,9 +129,10 @@ class ALNSConfig:
     def time_window_strategy(self) -> str:
         return get_nested(self._config, "general", "time_window_strategy", default="class_based")
 
-    # ========== 迭代次数 ==========
+    # ==========  ==========
     @property
     def iterations_default(self) -> int:
+        """（）"""
         """默认迭代次数（命令行不指定时使用）"""
         return get_nested(self._config, "iterations", "default", default=2000)
 
@@ -141,6 +146,7 @@ class ALNSConfig:
 
     @property
     def iterations(self) -> int:
+        """（）"""
         """默认迭代次数（小规模）"""
         return self.iterations_small
 
@@ -150,10 +156,11 @@ class ALNSConfig:
 
     @property
     def time_limit(self) -> int:
+        """（）"""
         """时间限制（秒）"""
         return get_nested(self._config, "iterations", "time_limit", default=1800)
 
-    # ========== 模拟退火 ==========
+    # ==========  ==========
     @property
     def w_percent(self) -> float:
         return get_nested(self._config, "simulated_annealing", "w_percent", default=30.0)
@@ -164,6 +171,7 @@ class ALNSConfig:
 
     @property
     def sa_min_temp(self) -> float:
+        """（temperature_min）"""
         """模拟退火最低温度（temperature_min的别名）"""
         return self.temperature_min
 
@@ -183,7 +191,7 @@ class ALNSConfig:
     def cooling_transition_iters(self) -> int:
         return get_nested(self._config, "simulated_annealing", "cooling", "transition_iters", default=1400)
 
-    # ========== 重热机制 ==========
+    # ==========  ==========
     @property
     def reheat_stall_trigger(self) -> int:
         return get_nested(self._config, "reheat", "stall_trigger", default=300)
@@ -240,29 +248,33 @@ class ALNSConfig:
     def reheat_temperature_scale(self) -> float:
         return get_nested(self._config, "reheat", "temperature_scale", default=1.2)
 
-    # ========== 销毁配额 ==========
+    # ==========  ==========
     # β ∈ [max{3, r_L|C|}, min{30, r_U|C|}]
     @property
     def r_lower(self) -> float:
+        """r_L:  (15%)"""
         """r_L: 移除比例下限 (默认15%)"""
         return get_nested(self._config, "destroy_quota", "r_lower", default=0.15)
 
     @property
     def r_upper_small(self) -> float:
+        """r_U:  (50%)"""
         """r_U: 小规模实例移除比例上限 (默认50%)"""
         return get_nested(self._config, "destroy_quota", "r_upper_small", default=0.50)
 
     @property
     def r_upper_large(self) -> float:
+        """r_U:  (30%)"""
         """r_U: 大规模实例移除比例上限 (默认30%)"""
         return get_nested(self._config, "destroy_quota", "r_upper_large", default=0.30)
 
     @property
     def quota_base_cap(self) -> int:
+        """ (30)"""
         """移除数量绝对上限 (公式中的30)"""
         return get_nested(self._config, "destroy_quota", "base_cap", default=30)
 
-    # ========== 自适应算子选择 ==========
+    # ==========  ==========
     @property
     def eta(self) -> float:
         return get_nested(self._config, "adaptive_selection", "eta", default=0.6)
@@ -295,7 +307,7 @@ class ALNSConfig:
     def weight_decay(self) -> float:
         return get_nested(self._config, "adaptive_selection", "weight_decay", default=0.02)
 
-    # ========== 局部搜索 ==========
+    # ==========  ==========
     @property
     def local_search_frequency(self) -> int:
         return get_nested(self._config, "local_search", "frequency", default=8)
@@ -380,7 +392,7 @@ class ALNSConfig:
     def matheuristic_lns_trials(self) -> int:
         return get_nested(self._config, "local_search", "matheuristic_lns_trials", default=5)
 
-    # ========== 无人机设置 ==========
+    # ==========  ==========
     @property
     def drone_priority(self) -> float:
         return get_nested(self._config, "drone", "priority", default=2.0)
@@ -400,16 +412,18 @@ class ALNSConfig:
     @property
     def drone_rendezvous_tolerance(self) -> float:
         """Maximum wait time for drone rendezvous."""
+        """Maximum wait time for drone rendezvous."""
         return get_nested(self._config, "drone", "rendezvous_tolerance", default=0.5)
 
     @property
     def forced_drone_customers(self) -> List[int]:
+        """，"""
         """客户点列表，这些点必须由无人机配送"""
         customers = get_nested(self._config, "drone",
                                "forced_drone_customers", default=[])
         return [int(c) for c in customers] if customers else []
 
-    # ========== 日志设置 ==========
+    # ==========  ==========
     @property
     def log_operators(self) -> bool:
         return get_nested(self._config, "logging", "log_operators", default=False)
@@ -418,10 +432,9 @@ class ALNSConfig:
     def operator_log_interval(self) -> int:
         return get_nested(self._config, "logging", "operator_log_interval", default=250)
 
-    # ========== 鲁棒性设置 ==========
+    # ==========  ==========
     @property
     def drone_battery_capacity(self) -> float:
-        """Config stores value /10 for paper consistency; code uses ×10."""
         return get_nested(self._config, "robustness", "drone_battery_capacity", default=6.3) * 10.0
 
     @property
@@ -437,7 +450,7 @@ class ALNSConfig:
         return get_nested(self._config, "robustness", "same_truck_retrieval", default=True)
 
     # NOTE: Parallel repair operator is enabled by default, no toggle in config
-    # ========== 延误成本参数 ==========
+    # ==========  ==========
     @property
     def cost_lambda(self) -> float:
         return get_nested(self._config, "delay_cost", "cost_lambda", default=12.0)
@@ -450,18 +463,20 @@ class ALNSConfig:
     def cost_normalized(self) -> bool:
         return get_nested(self._config, "delay_cost", "normalized", default=True)
 
-    # ========== MIP / 分段线性化设置 ==========
+    # ========== MIP /  ==========
     @property
     def piecewise_energy_segments(self) -> int:
+        """（ Gurobi ）。"""
         """返回能耗分段数（用于 Gurobi 分段近似）。"""
         return get_nested(self._config, "mip", "piecewise", "energy_num_segments", default=10)
 
     @property
     def piecewise_delay_segments(self) -> int:
+        """（）。"""
         """返回延误函数的分段数（保留以备将来使用）。"""
         return get_nested(self._config, "mip", "piecewise", "delay_num_segments", default=10)
 
-    # ========== 逃脱算法 ==========
+    # ==========  ==========
     @property
     def escape_enabled(self) -> bool:
         return get_nested(self._config, "escape", "enabled", default=True)
@@ -474,7 +489,7 @@ class ALNSConfig:
     def escape_duration(self) -> int:
         return get_nested(self._config, "escape", "duration", default=20)
 
-    # ========== 收敛增强 ==========
+    # ==========  ==========
     @property
     def diversification_enabled(self) -> bool:
         return get_nested(self._config, "convergence_enhancement", "diversification", "enabled", default=True)
@@ -491,7 +506,7 @@ class ALNSConfig:
     def adaptive_quota_enabled(self) -> bool:
         return get_nested(self._config, "convergence_enhancement", "adaptive_quota", "enabled", default=True)
 
-    # ========== MIP 设置 ==========
+    # ========== MIP  ==========
     @property
     def mip_time_limit(self) -> int:
         return get_nested(self._config, "mip", "time_limit", default=1800)
@@ -509,10 +524,12 @@ class ALNSConfig:
         return get_nested(self._config, "mip", "output_flag", default=1)
 
     def iterations_for(self, size: str) -> int:
+        """"""
         """根据规模获取迭代次数"""
         return self.iterations_small if size.lower() == "small" else self.iterations_large
 
     def build_sa_config_dict(self, size: str = "small", iterations: Optional[int] = None) -> Dict[str, Any]:
+        """SANNCfg"""
         """构建SANNCfg所需的参数字典"""
         return {
             "size": size,
@@ -555,11 +572,11 @@ class ALNSConfig:
             "intensify_frequency": self.intensify_frequency,
             "cross_exchange_prob": self.cross_exchange_prob,
             "path_relinking_prob": self.path_relinking_prob,
-            # 逃脱算法参数
+
             "escape_enabled": self.escape_enabled,
             "escape_trigger_stall": self.escape_trigger_stall,
             "escape_duration": self.escape_duration,
-            # 收敛增强参数
+
             "diversification_enabled": self.diversification_enabled,
             "diversification_trigger_stall": self.diversification_trigger_stall,
             "diversification_restart_best_prob": get_nested(self._config, "convergence_enhancement", "diversification", "restart_best_prob", default=0.7),
@@ -589,18 +606,19 @@ class ALNSConfig:
         }
 
 
-# 便捷函数: 直接获取默认配置实例
+# :
 _default_config: Optional[ALNSConfig] = None
 
 
 def get_default_config() -> ALNSConfig:
+    """（）"""
     """获取默认配置实例（单例模式）"""
     global _default_config
     if _default_config is None:
         try:
             _default_config = ALNSConfig()
         except FileNotFoundError:
-            # 如果找不到配置文件，创建一个使用默认值的配置
+            # ，
             _default_config = ALNSConfig.__new__(ALNSConfig)
             _default_config._config = {}
     return _default_config

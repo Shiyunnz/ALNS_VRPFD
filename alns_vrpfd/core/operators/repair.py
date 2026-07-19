@@ -37,6 +37,7 @@ class Candidate:
 
 class RepairOperator:
     """Base class for traditional repair operators."""
+    """Base class for traditional repair operators."""
 
     def __init__(
         self,
@@ -153,13 +154,13 @@ class RepairOperator:
         if not candidates:
             return None
 
-        # 禁止卡车访问的客户：只选择无人机候选
+        # ：
         if customer in self._forced_drone_customers:
             drone_candidates = [c for c in candidates if c.kind == "drone"]
             if drone_candidates:
                 self._normalise(drone_candidates)
                 return min(drone_candidates, key=lambda cand: cand.score)
-            # 如果没有无人机候选，返回 None
+            # ， None
             return None
 
         self._normalise(candidates)
@@ -872,7 +873,7 @@ class RepairOperator:
     def _apply_candidate(self, solution: Solution, cand: Candidate) -> None:
         if cand.kind == "truck":
             route = solution.truck_routes[cand.route_index]
-            # 防御性检查：避免重复插入
+            # ：
             if cand.customer_id in route.nodes:
                 return
             route.nodes.insert(cand.position, cand.customer_id)
@@ -880,7 +881,7 @@ class RepairOperator:
         else:
             if cand.drone_task_index is not None and cand.drone_task_index >= 0:
                 task = solution.drone_tasks[cand.drone_task_index]
-                # 防御性检查：避免重复插入
+                # ：
                 if cand.customer_id in task.nodes:
                     return
                 task.nodes.insert(cand.position + 1, cand.customer_id)
@@ -1180,7 +1181,7 @@ class RepairRegret(RepairOperator):
         if not candidates:
             return None
 
-        # 强制无人机客户：只选择无人机候选
+        # ：
         if customer in self._forced_drone_customers:
             drone_candidates = [c for c in candidates if c.kind == "drone"]
             if drone_candidates:
@@ -1202,7 +1203,7 @@ class RepairBiasedRandomized(RepairOperator):
         if not candidates:
             return None
 
-        # 强制无人机客户：只选择无人机候选
+        # ：
         if customer in self._forced_drone_customers:
             drone_candidates = [c for c in candidates if c.kind == "drone"]
             if drone_candidates:
@@ -1227,7 +1228,7 @@ class RepairBiasedRandomized(RepairOperator):
 
 
 class RepairEqualPriority(RepairOperator):
-    """Equal-priority insertion (同优先级插入).
+    """Equal-priority insertion ().
 
     Strategy: Treats truck and drone insertion options as equally important.
 
@@ -1244,7 +1245,7 @@ class RepairEqualPriority(RepairOperator):
         if not candidates:
             return None
 
-        # 强制无人机客户：只选择无人机候选
+        # ：
         if customer in self._forced_drone_customers:
             drone_candidates = [c for c in candidates if c.kind == "drone"]
             if drone_candidates:
@@ -1261,6 +1262,7 @@ class RepairEqualPriority(RepairOperator):
 
     def _compute_cost(self, cand: Candidate) -> float:
         """Compute insertion cost considering vehicle unit costs."""
+        """Compute insertion cost considering vehicle unit costs."""
         if cand.kind == "truck":
             return cand.delta_distance * self._truck_unit_cost
         else:
@@ -1268,7 +1270,7 @@ class RepairEqualPriority(RepairOperator):
 
 
 class RepairDronePriorityRegret(RepairOperator):
-    """Drone-first truck-second insertion (无人机优先，卡车次之插入).
+    """Drone-first truck-second insertion (，).
 
     Strategy: Aims to quickly reduce cost by prioritizing drone's low-cost advantage.
 
@@ -1287,6 +1289,7 @@ class RepairDronePriorityRegret(RepairOperator):
         self.initial_weight = 1.25
 
     def _select_customer(self, solution: Solution, pool: List[int]) -> int:
+        """Select customer with highest regret (drone vs truck cost difference)."""
         """Select customer with highest regret (drone vs truck cost difference)."""
         best_customer = pool[0]
         best_regret = float("-inf")
@@ -1322,13 +1325,14 @@ class RepairDronePriorityRegret(RepairOperator):
 
     def _choose_candidate(self, solution: Solution, customer: int) -> Optional[Candidate]:
         """Drone-first: Only use truck if no feasible drone position exists."""
+        """Drone-first: Only use truck if no feasible drone position exists."""
         candidates = self._cache.pop(customer, None)
         if candidates is None:
             candidates = self._generate_candidates(solution, customer)
         if not candidates:
             return None
 
-        # 强制无人机客户：只选择无人机候选
+        # ：
         if customer in self._forced_drone_customers:
             drone_candidates = [c for c in candidates if c.kind == "drone"]
             if drone_candidates:
@@ -1359,7 +1363,7 @@ class RepairDronePriorityRegret(RepairOperator):
 
 
 class RepairTruckFirst(RepairOperator):
-    """Truck-first drone-second insertion (卡车优先，无人机次之插入).
+    """Truck-first drone-second insertion (，).
 
     Strategy: Ensure connectivity first, then optimize structure.
 
@@ -1374,6 +1378,7 @@ class RepairTruckFirst(RepairOperator):
 
     def apply(self, solution: Solution, unassigned: Iterable[int]) -> Solution:
         """Two-phase repair: truck insertion then drone migration."""
+        """Two-phase repair: truck insertion then drone migration."""
         mutated = solution.clone()
         pool = list(unassigned)
         staged_truck: List[int] = []
@@ -1386,7 +1391,7 @@ class RepairTruckFirst(RepairOperator):
             if not candidates:
                 continue
 
-            # 强制无人机客户：直接插入无人机
+            # ：
             if customer in self._forced_drone_customers:
                 drone_candidates = [c for c in candidates if c.kind == "drone"]
                 if drone_candidates:

@@ -1,12 +1,12 @@
 """
-无人机数量敏感度分析
 
-默认遍历 Instance10 (10 客户点) 算例集，并考察不同无人机数量对以下指标的影响：
-1. 总成本 (Total Cost)
-2. 成本减少百分比 (Cost Reduction %) - 相对于基线
-3. 无人机服务的客户点数量 (Drone-served Customers)
 
-脚本支持通过命令行参数指定其它算例目录，并可选择是否将结果追加写入既有 CSV 文件。
+ Instance10 (10 ) ，：
+1.  (Total Cost)
+2.  (Cost Reduction %) - 
+3.  (Drone-served Customers)
+
+， CSV 。
 """
 
 from __future__ import annotations
@@ -47,6 +47,7 @@ from sensitivity.instance_selector import collect_instance_paths_with_scope
 
 def _infer_size(instance) -> str:
     """Infer 'small'|'medium'|'large' based on customer count."""
+    """Infer 'small'|'medium'|'large' based on customer count."""
     num_customers = len(instance.customer_manager.customer_ids())
     if num_customers <= 15:
         return "small"
@@ -56,6 +57,7 @@ def _infer_size(instance) -> str:
 
 
 def _safe_mean(values: List[float]) -> float:
+    """Compute mean of values, returning 0.0 if list is empty."""
     """Compute mean of values, returning 0.0 if list is empty."""
     return sum(values) / len(values) if values else 0.0
 
@@ -67,26 +69,26 @@ def filter_drone_count_outliers(
     max_remove: int = 1
 ) -> tuple[List[float], int]:
     """
-    过滤与预期趋势相反的异常值。
-    
-    对于无人机数量敏感性分析:
-    - 增加无人机数量时，成本应该下降或持平（cost_saving >= 0）
-    - 减少无人机数量时，成本可能上升（cost_saving < 0 是合理的）
-    
+    。
+
+    :
+    - ，（cost_saving >= 0）
+    - ，（cost_saving < 0 ）
+
     Args:
-        values: 成本节省率列表
-        drone_count: 当前无人机数量
-        baseline_count: 基线无人机数量
-        max_remove: 最多过滤的数量，默认1个
-    
+        values: 
+        drone_count: 
+        baseline_count: 
+        max_remove: ，1
+
     Returns:
-        (过滤后的列表, 被移除的异常值数量)
+        (, )
     """
     import math
     valid = [v for v in values if isinstance(v, (int, float)) and math.isfinite(v)]
     
     if drone_count == baseline_count:
-        # baseline不需要过滤
+        # baseline
         return valid, 0
     
     if len(valid) < 2:
@@ -98,18 +100,18 @@ def filter_drone_count_outliers(
     outliers = []
     
     if drone_count > baseline_count:
-        # 无人机增加时，期望成本节省（正值）或至少持平
-        # 如果某个结果显示成本反而大幅增加（cost_saving远低于期望），视为异常
+        # ，（）
+        # （cost_saving），
         for i, v in enumerate(valid):
-            if v < median * 0.3 and v < 0:  # 远低于中位数且为负
+            if v < median * 0.3 and v < 0:
                 outliers.append((i, v, abs(v - median)))
     else:
-        # 无人机减少时，可能成本增加（负值），但极端正值是异常
+        # ，（），
         for i, v in enumerate(valid):
-            if v > median * 2 and v > 5:  # 远高于中位数
+            if v > median * 2 and v > 5:
                 outliers.append((i, v, abs(v - median)))
     
-    # 按偏离程度排序，只移除最严重的 max_remove 个
+    # ， max_remove
     outliers.sort(key=lambda x: x[2], reverse=True)
     indices_to_remove = set(x[0] for x in outliers[:max_remove])
     
@@ -125,6 +127,7 @@ def _safe_mean_with_drone_filter(
     baseline_count: int,
     max_remove: int = 1
 ) -> tuple[float, int]:
+    """，。"""
     """计算平均值，过滤与预期趋势相反的异常值。"""
     filtered, removed = filter_drone_count_outliers(values, drone_count, baseline_count, max_remove)
     mean_val = sum(filtered) / len(filtered) if filtered else 0.0
@@ -138,35 +141,35 @@ _default_config = ALNSConfig()
 
 
 # ==========================================================================
-# 实验配置
+
 # ==========================================================================
 
-# 按规模设置无人机数量水平和基线
+
 # Instance10: baseline = 2, levels = [1, 2, 3, 4, 5]
 # Instance25: baseline = 1, levels = [1, 2, 3, 4, 5]
 DRONE_COUNT_LEVELS_BY_SCALE = {
     "Instance10": [1, 2, 3, 4, 5],
     "Instance25": [1, 2, 3, 4, 5],
 }
-DEFAULT_DRONE_COUNT_LEVELS = [1, 2, 3, 4, 5]  # 默认水平
+DEFAULT_DRONE_COUNT_LEVELS = [1, 2, 3, 4, 5]
 
 BASELINE_BY_SCALE = {
     "Instance10": 2,
     "Instance25": 1,
 }
-DEFAULT_BASELINE = 1  # 默认基线（如果规模不在上述字典中）
+DEFAULT_BASELINE = 1  # （）
 
-# 需要排除的不一致算例（Instance25中R_50有2架无人机的算例）
+# （Instance25R_502）
 EXCLUDED_INSTANCES = [
     "R_50_25_1",  # 2 drones
     "R_50_25_4",  # 2 drones
     "R_50_25_5",  # 2 drones
 ]
 
-# 默认算例目录
+
 DEFAULT_INSTANCE_DIRS = [Path("data/Instance10")]
 
-# ALNS 运行参数 - 固定为 2000 次迭代 (按用户要求)
+# ALNS  -  2000  ()
 ITERATIONS = 2000
 TIME_LIMIT = _default_config.time_limit
 SEED = _default_config.seed
@@ -179,6 +182,7 @@ OUTPUT_CSV = OUTPUT_DIR / "drone_count_sensitivity_results.csv"
 
 
 def _build_sa_config(instance) -> SANNCfg:
+    """YAMLSANNCfg"""
     """从YAML配置构建SANNCfg"""
     sa_config_dict = _default_config.build_sa_config_dict()
     sa_config_dict['size'] = _infer_size(instance)
@@ -247,6 +251,7 @@ def collect_instance_paths(
     regions: str | None,
     instance_name: str | None,
 ) -> List[str]:
+    """，。"""
     """根据目录列表收集算例文件路径，排除不一致的算例。"""
     collected = collect_instance_paths_with_scope(
         instance_dirs,
@@ -259,18 +264,20 @@ def collect_instance_paths(
 
 
 # ==========================================================================
-# 辅助函数
+
 # ==========================================================================
 
 def get_instance_original_drone_count(instance_path: str) -> int:
+    """。"""
     """读取算例文件中原始配置的无人机数量。"""
     instance = read_instance(instance_path, strategy="class_based")
     if 'drone' in instance.vehicle_specs:
         return instance.vehicle_specs['drone'].number
-    return 1  # 默认值
+    return 1
 
 
 def count_drone_served_customers(solution) -> int:
+    """。"""
     """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
@@ -285,6 +292,7 @@ def run_single_experiment(
     same_truck_retrieval: bool = False,
     seed: int | None = None,
 ) -> Dict[str, Any]:
+    """。"""
     """运行单个无人机数量配置实验。"""
 
     print(
@@ -453,6 +461,7 @@ def run_single_experiment(
 
 
 def _choose_best_result(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
+    """ best_cost  + best_drone_customers （）。"""
     """按 best_cost 最小 + best_drone_customers 最大（平局）选择最佳记录。"""
     if not rows:
         return None
@@ -474,6 +483,7 @@ def _choose_best_result(rows: List[Dict[str, Any]]) -> Dict[str, Any] | None:
 def load_baseline_from_csv(
     instance_paths: List[str],
 ) -> tuple[Dict[str, float], Dict[str, Dict[str, Any]]]:
+    """ CSV 。"""
     """从现有 CSV 加载基线成本与基线最佳记录。"""
     baseline_costs: Dict[str, float] = {path: math.inf for path in instance_paths}
     baseline_rows: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
@@ -531,9 +541,10 @@ def run_drone_count_sensitivity_analysis(
     skip_baseline: bool = False,
     trials: int = 5,
 ) -> List[Dict[str, Any]]:
+    """。"""
     """运行无人机数量敏感度分析并返回结果列表。"""
 
-    # 按规模分组算例
+
     instances_by_scale: Dict[str, List[str]] = defaultdict(list)
     for instance_path in instance_paths:
         scale = _extract_scale_label(instance_path)
@@ -561,7 +572,7 @@ def run_drone_count_sensitivity_analysis(
     baseline_results_map = {}  # instance_path -> result dict
     baseline_drone_counts = {}  # instance_path -> baseline drone count
 
-    # 按规模分别处理
+
     for scale, scale_instances in instances_by_scale.items():
         drone_levels = count_levels or DRONE_COUNT_LEVELS_BY_SCALE.get(scale, DEFAULT_DRONE_COUNT_LEVELS)
         baseline_count = BASELINE_BY_SCALE.get(scale, DEFAULT_BASELINE)
@@ -573,7 +584,7 @@ def run_drone_count_sensitivity_analysis(
         print(f"  Levels: {drone_levels}")
         print(f"{'='*40}")
 
-        # 1. 运行 Baseline 获取基准 Costs
+        # 1.  Baseline  Costs
         print(f"\nPhase 1: Handling Baselines for {scale}...")
         
         if skip_baseline:

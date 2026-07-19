@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-# 统一的路径设置：支持命令行和VSCode运行按钮
+# ：VSCode
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent.parent
 if str(project_root) not in sys.path:
@@ -27,6 +27,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 del _p, _project_root
 
+__doc__ = """Solve the truck-drone MILP formulation with Gurobi."""
 __doc__ = """Solve the truck-drone MILP formulation with Gurobi."""
 
 
@@ -107,9 +108,11 @@ OUTPUT_PATH = Path("results") / "MIPresult_new" / "mip_runs.json"
 
 class SolverError(RuntimeError):
     """Exception raised when the MILP solve fails."""
+    """Exception raised when the MILP solve fails."""
 
 
 def _reconstruct_routes(arcs: list[tuple[int, int]], arrival_times: dict = None) -> list[list[int]]:
+    """Reconstruct one or more routes from a set of arcs, ordered by arrival time if provided."""
     """Reconstruct one or more routes from a set of arcs, ordered by arrival time if provided."""
     if not arcs:
         return []
@@ -148,6 +151,7 @@ def _reconstruct_routes(arcs: list[tuple[int, int]], arrival_times: dict = None)
 
 
 def run_single_mip(config: Dict[str, Any]) -> Dict[str, Any]:
+    """Run a single MILP experiment with the given configuration."""
     """Run a single MILP experiment with the given configuration."""
     instance_path = Path(config["instance"])
     print(f"\n=== Running MILP on {instance_path} ===")
@@ -388,6 +392,7 @@ def run_single_mip(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def run_experiments() -> None:
     """Run all configured MILP experiments."""
+    """Run all configured MILP experiments."""
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     all_results: List[Dict[str, Any]] = []
 
@@ -412,6 +417,7 @@ def run_experiments() -> None:
 
 
 def _extract_decision_variables(vars: Any, data: Any) -> Dict[str, Any]:
+    """Extract all decision variable values for post-hoc analysis."""
     """Extract all decision variable values for post-hoc analysis."""
     dv = {}
 
@@ -525,6 +531,7 @@ def _extract_decision_variables(vars: Any, data: Any) -> Dict[str, Any]:
 
 def _print_decision_variables(dv: Dict[str, Any]) -> None:
     """Print summary of key decision variables."""
+    """Print summary of key decision variables."""
     print("\n  === Decision Variable Summary ===")
     print(f"  x_truck arcs: {len(dv.get('x_truck_active', {}))}")
     print(f"  y_drone arcs: {len(dv.get('y_drone_active', {}))}")
@@ -562,6 +569,7 @@ def _verify_with_alns_evaluator(
     cost_rho: float = 0.20833,
     cost_normalized: bool = True,
 ) -> Dict[str, Any]:
+    """Reconstruct ALNS Solution from MILP decision variables and verify feasibility."""
     """Reconstruct ALNS Solution from MILP decision variables and verify feasibility."""
     from alns_vrpfd.evaluation.evaluator import Evaluator
     from alns_vrpfd.model import Solution, TruckRoute, DroneTask
@@ -834,6 +842,7 @@ def _reconstruct_from_json_routes(
     dm: Dict[int, float],
 ) -> Any:
     """Reconstruct ALNS Solution from JSON-like route structure (fallback method)."""
+    """Reconstruct ALNS Solution from JSON-like route structure (fallback method)."""
     from alns_vrpfd.model import Solution, TruckRoute, DroneTask
     from alns_vrpfd.core.operators.base import _build_payloads
 
@@ -917,6 +926,7 @@ def _reconstruct_from_json_routes(
 
 def _print_energy_breakdown(drone_id: int, arcs: list[tuple[int, int]], vars: Any, data: Any) -> None:
     """Emit energy decision variable values for each selected arc."""
+    """Emit energy decision variable values for each selected arc."""
 
     energy_active = getattr(vars, "energy_active", None)
     omega_active = getattr(vars, "omega_active", None)
@@ -969,6 +979,7 @@ def _print_energy_breakdown(drone_id: int, arcs: list[tuple[int, int]], vars: An
 
 
 def _print_energy_decisions(drone_id: int, arcs: list[tuple[int, int]], vars: Any, data: Any) -> None:
+    """，。"""
     """打印关键能耗决策变量，帮助定位无人机在各弧上的能量使用情况。"""
 
     energy_state_gamma = getattr(vars, "energy_state_gamma", None)

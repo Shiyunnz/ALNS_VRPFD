@@ -34,6 +34,7 @@ __all__ = [
 @dataclass(frozen=True)
 class EvaluationResult:
     """Container for aggregated evaluation metrics."""
+    """Container for aggregated evaluation metrics."""
 
     feasible: bool
     total_cost: float
@@ -45,6 +46,7 @@ class EvaluationResult:
 
 @dataclass(frozen=True)
 class NodeDelay:
+    """Delay information for an individual serviced node."""
     """Delay information for an individual serviced node."""
 
     node_id: int
@@ -58,6 +60,7 @@ class NodeDelay:
 @dataclass(frozen=True)
 class DelayBreakdown:
     """Aggregated delay penalty details."""
+    """Aggregated delay penalty details."""
 
     total_delay: float
     nodes: Tuple[NodeDelay, ...] = field(default_factory=tuple)
@@ -67,6 +70,7 @@ class DelayBreakdown:
 
 @dataclass(frozen=True)
 class TimeWindowViolation:
+    """Record of a hard time-window violation."""
     """Record of a hard time-window violation."""
 
     node_id: int
@@ -79,6 +83,7 @@ class TimeWindowViolation:
 @dataclass(frozen=True)
 class EvaluationDetails:
     """Full evaluation outcome including timings and robustness."""
+    """Full evaluation outcome including timings and robustness."""
 
     result: EvaluationResult
     truck_timings: Mapping[int, TruckRouteTiming]
@@ -89,6 +94,7 @@ class EvaluationDetails:
 
 
 class Evaluator:
+    """Compute costs, timing tables, and robustness checks for a solution."""
     """Compute costs, timing tables, and robustness checks for a solution."""
 
     def __init__(
@@ -147,10 +153,12 @@ class Evaluator:
     # ------------------------------------------------------------------
     def evaluate_solution(self, solution: Solution) -> EvaluationResult:
         """Return cost-only summary using the detailed evaluation pipeline."""
+        """Return cost-only summary using the detailed evaluation pipeline."""
         return self.evaluate_with_details(solution).result
 
     # ------------------------------------------------------------------
     def evaluate_with_details(self, solution: Solution) -> EvaluationDetails:
+        """Compute timings, costs, and robustness for the given solution."""
         """Compute timings, costs, and robustness for the given solution."""
         if self._has_duplicate_truck_route_ids(solution):
             return self._infeasible_details()
@@ -296,7 +304,7 @@ class Evaluator:
             + drone_distance_cost
             + delay_breakdown.total_delay
         )
-        # 可行性检查必须包含能耗约束 (robustness.feasible)
+        # (robustness.feasible)
         feasible = (not delay_breakdown.violations and not anchor_conflict and
                     not drone_limit_violation and not drone_task_violation and
                     not customer_coverage_violation and not truck_capacity_violation and
@@ -325,11 +333,13 @@ class Evaluator:
     # ------------------------------------------------------------------
     def _has_duplicate_truck_route_ids(self, solution: Solution) -> bool:
         """Return True when multiple truck routes share the same identity."""
+        """Return True when multiple truck routes share the same identity."""
         route_ids = [route.id for route in solution.truck_routes]
         return len(route_ids) != len(set(route_ids))
 
     # ------------------------------------------------------------------
     def _has_duplicate_drone_task_ids(self, solution: Solution) -> bool:
+        """Return True when multiple drone tasks share a non-null identity."""
         """Return True when multiple drone tasks share a non-null identity."""
         task_ids = [
             task.task_id
@@ -340,6 +350,7 @@ class Evaluator:
 
     # ------------------------------------------------------------------
     def _has_truck_capacity_violation(self, solution: Solution) -> bool:
+        """Return True when any truck route exceeds the instance capacity."""
         """Return True when any truck route exceeds the instance capacity."""
         truck_spec = self._instance.vehicle_specs.get("truck")
         if truck_spec is None:
@@ -354,6 +365,7 @@ class Evaluator:
 
     # ------------------------------------------------------------------
     def _has_depot_start_retrieve_violation(self, solution: Solution) -> bool:
+        """Return True when a two-depot solution retrieves a drone at the start depot."""
         """Return True when a two-depot solution retrieves a drone at the start depot."""
         return any(
             self._is_start_depot_retrieve(task)
@@ -710,6 +722,7 @@ class Evaluator:
 
     def _has_drone_task_violations(self, solution: Solution) -> bool:
         """Check if any drone task has feasibility violations."""
+        """Check if any drone task has feasibility violations."""
         drone_tasks = solution.drone_tasks
 
         # Build context with capacity
@@ -797,6 +810,7 @@ class Evaluator:
 
             # Sort tasks by launch position in truck route (critical for correct ordering)
             def get_launch_position(task: DroneTask) -> int:
+                """Get launch position in truck route for sorting."""
                 """Get launch position in truck route for sorting."""
                 launch_truck = task.launch_truck
                 if launch_truck is None:
@@ -892,6 +906,7 @@ class Evaluator:
     # ------------------------------------------------------------------
     def _has_customer_coverage_violation(self, solution: Solution) -> bool:
         """Check if all customers are served exactly once."""
+        """Check if all customers are served exactly once."""
         # Get all required customers (excluding depots)
         required_customers = set(self._customer_lookup.keys())
 
@@ -932,13 +947,14 @@ class Evaluator:
     # ------------------------------------------------------------------
     def _has_forced_drone_violation(self, solution: Solution) -> bool:
         """Check if forced drone customers appear in truck routes (forbidden)."""
+        """Check if forced drone customers appear in truck routes (forbidden)."""
         if not self._forced_drone_customers:
             return False
 
-        # 检查这些节点是否出现在卡车路线中（不包括起终点depot）
+        # （depot）
         for route in solution.truck_routes:
             for cust in self._forced_drone_customers:
-                if cust in route.nodes[1:-1]:  # 排除起终点
+                if cust in route.nodes[1:-1]:
                     return True
 
         return False
