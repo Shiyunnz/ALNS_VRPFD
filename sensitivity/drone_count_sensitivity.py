@@ -128,7 +128,6 @@ def _safe_mean_with_drone_filter(
     max_remove: int = 1
 ) -> tuple[float, int]:
     """，。"""
-    """计算平均值，过滤与预期趋势相反的异常值。"""
     filtered, removed = filter_drone_count_outliers(values, drone_count, baseline_count, max_remove)
     mean_val = sum(filtered) / len(filtered) if filtered else 0.0
     return mean_val, removed
@@ -252,7 +251,6 @@ def collect_instance_paths(
     instance_name: str | None,
 ) -> List[str]:
     """，。"""
-    """根据目录列表收集算例文件路径，排除不一致的算例。"""
     collected = collect_instance_paths_with_scope(
         instance_dirs,
         scope=instance_scope,
@@ -269,7 +267,6 @@ def collect_instance_paths(
 
 def get_instance_original_drone_count(instance_path: str) -> int:
     """。"""
-    """读取算例文件中原始配置的无人机数量。"""
     instance = read_instance(instance_path, strategy="class_based")
     if 'drone' in instance.vehicle_specs:
         return instance.vehicle_specs['drone'].number
@@ -278,7 +275,6 @@ def get_instance_original_drone_count(instance_path: str) -> int:
 
 def count_drone_served_customers(solution) -> int:
     """。"""
-    """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
         drone_customers.update(task.customers())
@@ -293,7 +289,6 @@ def run_single_experiment(
     seed: int | None = None,
 ) -> Dict[str, Any]:
     """。"""
-    """运行单个无人机数量配置实验。"""
 
     print(
         f"  Running: drone_count={drone_count}, same_truck={same_truck_retrieval}")
@@ -542,7 +537,6 @@ def run_drone_count_sensitivity_analysis(
     trials: int = 5,
 ) -> List[Dict[str, Any]]:
     """。"""
-    """运行无人机数量敏感度分析并返回结果列表。"""
 
 
     instances_by_scale: Dict[str, List[str]] = defaultdict(list)

@@ -138,7 +138,6 @@ def collect_instance_paths(
     instance_name: str | None,
 ) -> List[str]:
     """。"""
-    """根据目录列表收集算例文件路径。"""
     return collect_instance_paths_with_scope(
         instance_dirs,
         scope=instance_scope,
@@ -216,7 +215,6 @@ def run_single_experiment(
     seed: int | None = None,
 ) -> Dict[str, Any]:
     """。"""
-    """运行单个电池容量配置实验。"""
 
     print(
         f"  Running: battery_capacity={battery_capacity:.2f}, same_truck={same_truck_retrieval}")
@@ -422,7 +420,6 @@ def run_battery_sensitivity_analysis(
     trials: int = 5,
 ) -> List[Dict[str, Any]]:
     """。"""
-    """运行电池容量敏感度分析并返回结果列表。"""
 
     if battery_levels is None:
         battery_levels = BATTERY_LEVELS

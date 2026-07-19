@@ -980,7 +980,6 @@ def _print_energy_breakdown(drone_id: int, arcs: list[tuple[int, int]], vars: An
 
 def _print_energy_decisions(drone_id: int, arcs: list[tuple[int, int]], vars: Any, data: Any) -> None:
     """，。"""
-    """打印关键能耗决策变量，帮助定位无人机在各弧上的能量使用情况。"""
 
     energy_state_gamma = getattr(vars, "energy_state_gamma", None)
     energy_active = getattr(vars, "energy_active", None)

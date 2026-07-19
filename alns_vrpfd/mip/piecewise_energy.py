@@ -21,7 +21,6 @@ from alns_vrpfd.evaluation.energy import DroneEnergyModel
 
 class PiecewiseLinearEnergyBuilder:
     """。"""
-    """构建分段线性化的能耗约束。"""
 
     def __init__(
         self,

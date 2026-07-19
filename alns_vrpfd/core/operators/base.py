@@ -240,7 +240,6 @@ class DestroyOperator(ABC):
 
     def _get_anchor_tasks(self, solution: Solution, node: int) -> List[DroneTask]:
         """"""
-        """获取以指定节点为发射或回收点的所有无人机任务"""
         return [
             task for task in solution.drone_tasks
             if task.launch_node == node or task.retrieve_node == node

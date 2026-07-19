@@ -281,7 +281,6 @@ def parse_args() -> argparse.Namespace:
 
 def collect_instance_paths(instance_dirs: Iterable[str | Path]) -> List[str]:
     """。"""
-    """根据目录列表收集算例文件路径。"""
     collected: list[str] = []
     for directory in instance_dirs:
         dir_path = Path(directory)
@@ -403,7 +402,6 @@ def apply_instance_scope(
 
 def count_drone_served_customers(solution) -> int:
     """。"""
-    """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
         drone_customers.update(task.customers())
@@ -444,7 +442,6 @@ def run_single_experiment(
     seed: int,
 ) -> Dict[str, Any]:
     """。"""
-    """运行单个模式配置实验。"""
 
     mode_config = DOCKING_MODES[mode_key]
     print(
@@ -685,7 +682,6 @@ def run_docking_comparison(
     baseline_csv: Path | None = None,
 ) -> List[Dict[str, Any]]:
     """。"""
-    """运行对比实验并返回结果列表。"""
 
     print("=" * 80)
     print("灵活起降 vs 同车回收 对比分析")

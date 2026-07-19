@@ -94,7 +94,6 @@ class ALNSConfig:
 
     def _validate(self):
         """"""
-        """验证必要的配置项"""
         required_sections = ["simulated_annealing", "adaptive_selection"]
         for section in required_sections:
             if section not in self._config:
@@ -111,7 +110,6 @@ class ALNSConfig:
     @property
     def raw(self) -> Dict[str, Any]:
         """"""
-        """返回原始配置字典"""
         return self._config
 
     # ==========  ==========
@@ -133,7 +131,6 @@ class ALNSConfig:
     @property
     def iterations_default(self) -> int:
         """（）"""
-        """默认迭代次数（命令行不指定时使用）"""
         return get_nested(self._config, "iterations", "default", default=2000)
 
     @property
@@ -147,7 +144,6 @@ class ALNSConfig:
     @property
     def iterations(self) -> int:
         """（）"""
-        """默认迭代次数（小规模）"""
         return self.iterations_small
 
     @property
@@ -157,7 +153,6 @@ class ALNSConfig:
     @property
     def time_limit(self) -> int:
         """（）"""
-        """时间限制（秒）"""
         return get_nested(self._config, "iterations", "time_limit", default=1800)
 
     # ==========  ==========
@@ -253,25 +248,21 @@ class ALNSConfig:
     @property
     def r_lower(self) -> float:
         """r_L:  (15%)"""
-        """r_L: 移除比例下限 (默认15%)"""
         return get_nested(self._config, "destroy_quota", "r_lower", default=0.15)
 
     @property
     def r_upper_small(self) -> float:
         """r_U:  (50%)"""
-        """r_U: 小规模实例移除比例上限 (默认50%)"""
         return get_nested(self._config, "destroy_quota", "r_upper_small", default=0.50)
 
     @property
     def r_upper_large(self) -> float:
         """r_U:  (30%)"""
-        """r_U: 大规模实例移除比例上限 (默认30%)"""
         return get_nested(self._config, "destroy_quota", "r_upper_large", default=0.30)
 
     @property
     def quota_base_cap(self) -> int:
         """ (30)"""
-        """移除数量绝对上限 (公式中的30)"""
         return get_nested(self._config, "destroy_quota", "base_cap", default=30)
 
     # ==========  ==========
@@ -418,7 +409,6 @@ class ALNSConfig:
     @property
     def forced_drone_customers(self) -> List[int]:
         """，"""
-        """客户点列表，这些点必须由无人机配送"""
         customers = get_nested(self._config, "drone",
                                "forced_drone_customers", default=[])
         return [int(c) for c in customers] if customers else []
@@ -473,7 +463,6 @@ class ALNSConfig:
     @property
     def piecewise_delay_segments(self) -> int:
         """（）。"""
-        """返回延误函数的分段数（保留以备将来使用）。"""
         return get_nested(self._config, "mip", "piecewise", "delay_num_segments", default=10)
 
     # ==========  ==========
@@ -525,7 +514,6 @@ class ALNSConfig:
 
     def iterations_for(self, size: str) -> int:
         """"""
-        """根据规模获取迭代次数"""
         return self.iterations_small if size.lower() == "small" else self.iterations_large
 
     def build_sa_config_dict(self, size: str = "small", iterations: Optional[int] = None) -> Dict[str, Any]:
@@ -612,7 +600,6 @@ _default_config: Optional[ALNSConfig] = None
 
 def get_default_config() -> ALNSConfig:
     """（）"""
-    """获取默认配置实例（单例模式）"""
     global _default_config
     if _default_config is None:
         try:

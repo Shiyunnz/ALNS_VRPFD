@@ -1280,7 +1280,6 @@ class SimulatedAnnealingALNS:
 
     def _diversify(self, solution: Solution) -> Optional[Solution]:
         """"""
-        """执行强力多样化扰动"""
         destroy_ratio = self._cfg.diversification_destroy_ratio
         quota = max(3, int(round(destroy_ratio * self._n_customers)))
 

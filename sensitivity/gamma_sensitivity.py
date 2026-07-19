@@ -128,7 +128,6 @@ def _safe_mean_with_trend_filter(
     max_remove: int = 2
 ) -> tuple[float, int]:
     """，。"""
-    """计算平均值，过滤与预期趋势相反的异常值。"""
     filtered, removed = filter_against_expected_trend(values, gamma, min_increase_threshold, max_remove)
     mean_val = sum(filtered) / len(filtered) if filtered else 0.0
     return mean_val, removed
@@ -237,7 +236,6 @@ def collect_instance_paths(
     instance_name: str | None,
 ) -> List[str]:
     """。"""
-    """根据目录列表收集算例文件路径。"""
     return collect_instance_paths_with_scope(
         instance_dirs,
         scope=instance_scope,
@@ -252,7 +250,6 @@ def collect_instance_paths(
 
 def count_drone_served_customers(solution) -> int:
     """。"""
-    """统计无人机服务的客户点数量。"""
     drone_customers = set()
     for task in solution.drone_tasks:
         drone_customers.update(task.customers())
