@@ -837,12 +837,17 @@ class Evaluator:
             current_truck = None  # None means drone is free to start anywhere
             current_node = None   # The node where drone is currently located
             current_retrieve_pos = -1  # Position of current retrieve node in truck route
+            at_depot_end = False  # Drone returned to depot_end, cannot fly again
 
             for task in sorted_tasks:
                 launch_truck = task.launch_truck
                 launch_node = task.launch_node
                 land_truck = task.land_truck
                 retrieve_node = task.retrieve_node
+
+                # Check 0: drone at depot_end cannot start new sorties
+                if at_depot_end:
+                    return True
 
                 # Check 1: flexible docking allows drone to switch between trucks.
                 # Reset tracking when drone switches to a different truck.
@@ -892,13 +897,14 @@ class Evaluator:
                 current_truck = land_truck
                 current_node = retrieve_node
 
+                if land_truck is None and retrieve_node == self._instance.customer_manager.depot_end:
+                    at_depot_end = True
+
                 # Update retrieve position for next iteration
                 if land_truck is not None and land_truck in truck_node_positions:
                     current_retrieve_pos = truck_node_positions[land_truck].get(
                         retrieve_node, -1)
                 elif land_truck is None:
-                    # Landing at depot - this is the end position
-                    # Use a large number to indicate depot end (which is after all other nodes)
                     current_retrieve_pos = 999999
 
         return False

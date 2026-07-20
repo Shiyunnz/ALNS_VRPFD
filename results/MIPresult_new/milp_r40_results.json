@@ -1,0 +1,545 @@
+[
+  {
+    "instance": "data/Instance10/R_40_10_1.txt",
+    "config": {
+      "instance": "data/Instance10/R_40_10_1.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_40_10_1 fix v2"
+    },
+    "solve_time": 3600.1366567611694,
+    "status": 9,
+    "objective": 97.62,
+    "best_bound": 61.66493397212301,
+    "mip_gap": 0.3683165952456156,
+    "runtime": 3600.0245480537415,
+    "truck_routes": [
+      {
+        "truck": 0,
+        "route": [
+          0,
+          7,
+          4,
+          5,
+          11
+        ],
+        "distance": 45.6
+      },
+      {
+        "truck": 1,
+        "route": [
+          0,
+          1,
+          2,
+          11
+        ],
+        "distance": 34.4
+      }
+    ],
+    "drone_tasks": [
+      {
+        "drone": 0,
+        "tasks": [
+          {
+            "launch_node": 1,
+            "retrieve_node": 2,
+            "customers": [
+              10
+            ],
+            "launch_truck": 1,
+            "retrieve_truck": 1
+          }
+        ],
+        "distance": 51.599999999999994
+      },
+      {
+        "drone": 1,
+        "tasks": [
+          {
+            "launch_node": 7,
+            "retrieve_node": 4,
+            "customers": [
+              9
+            ],
+            "launch_truck": 0,
+            "retrieve_truck": 0
+          },
+          {
+            "launch_node": 4,
+            "retrieve_node": 5,
+            "customers": [
+              6,
+              8
+            ],
+            "launch_truck": 0,
+            "retrieve_truck": null
+          }
+        ],
+        "distance": 36.5
+      }
+    ],
+    "decision_variables": {
+      "x_truck_active": {
+        "(0,1,1)": 1.0,
+        "(0,7,0)": 1.0,
+        "(1,2,1)": 1.0,
+        "(2,11,1)": 1.0,
+        "(4,5,0)": 1.0,
+        "(5,11,0)": 1.0,
+        "(7,4,0)": 1.0
+      },
+      "y_drone_active": {
+        "(1,10,0)": 1.0,
+        "(2,3,0)": 1.0,
+        "(3,11,0)": 1.0,
+        "(4,6,1)": 1.0,
+        "(6,8,1)": 1.0,
+        "(7,9,1)": 1.0,
+        "(8,5,1)": 1.0,
+        "(9,4,1)": 1.0,
+        "(10,2,0)": 1.0
+      },
+      "z_coupling_active": {
+        "(0,1,1,0)": 1.0,
+        "(0,7,0,1)": 1.0,
+        "(5,11,0,1)": 1.0
+      },
+      "u_sync_active": {
+        "(1,1,0)": 1.0,
+        "(2,1,0)": 1.0,
+        "(4,0,1)": 1.0,
+        "(7,0,1)": 1.0
+      },
+      "arrival_truck_nonzero": {
+        "(1,1)": 0.491429,
+        "(2,1)": 0.837143,
+        "(3,0)": 1.02,
+        "(3,1)": 1.02,
+        "(4,0)": 0.977143,
+        "(5,0)": 1.131429,
+        "(7,0)": 0.651429,
+        "(11,0)": 1.365714,
+        "(11,1)": 0.982857
+      },
+      "arrival_drone_nonzero": {
+        "(1,0)": 0.491429,
+        "(2,0)": 0.837143,
+        "(3,0)": 1.02,
+        "(3,1)": 3.571507,
+        "(4,1)": 0.977143,
+        "(5,1)": 1.194286,
+        "(6,1)": 1.077143,
+        "(7,1)": 0.651429,
+        "(8,1)": 1.142857,
+        "(9,1)": 0.722857,
+        "(10,0)": 0.584286,
+        "(11,0)": 1.27,
+        "(11,1)": 1.365714
+      },
+      "tardiness_truck_nonzero": {},
+      "tardiness_drone_nonzero": {},
+      "delay_cost_truck_nonzero": {},
+      "delay_cost_drone_nonzero": {},
+      "load_truck_nonzero": {
+        "(0,0)": 500.0,
+        "(0,1)": 500.0,
+        "(1,0)": 30.0,
+        "(1,1)": 500.0,
+        "(2,0)": 6.0,
+        "(2,1)": 464.0,
+        "(3,0)": 27.0,
+        "(3,1)": 27.0,
+        "(4,0)": 46.0,
+        "(4,1)": 26.324667,
+        "(5,0)": 6.0,
+        "(5,1)": 30.0,
+        "(6,0)": 30.0,
+        "(6,1)": 30.0,
+        "(7,0)": 85.0,
+        "(7,1)": 30.0,
+        "(8,0)": 30.0,
+        "(8,1)": 30.0,
+        "(9,1)": 30.0,
+        "(10,0)": 30.0,
+        "(10,1)": 30.0,
+        "(11,1)": 458.0
+      },
+      "load_drone_plus_nonzero": {
+        "(1,0)": 11.0,
+        "(2,0)": 3.0,
+        "(4,1)": 30.0,
+        "(6,1)": 11.0,
+        "(7,1)": 27.0,
+        "(8,1)": 6.0,
+        "(9,1)": 10.0
+      },
+      "load_drone_minus_nonzero": {
+        "(1,0)": 30.0,
+        "(1,1)": 30.0,
+        "(2,1)": 30.0,
+        "(3,0)": 3.0,
+        "(4,1)": 10.0,
+        "(5,1)": 6.0,
+        "(6,0)": 30.0,
+        "(6,1)": 30.0,
+        "(7,1)": 30.0,
+        "(8,0)": 30.0,
+        "(8,1)": 11.0,
+        "(9,0)": 30.0,
+        "(9,1)": 27.0,
+        "(10,0)": 11.0,
+        "(11,1)": 3.290456
+      },
+      "energy_worst_case_nonzero": {
+        "(2,0)": 6.3,
+        "(3,0)": 3.372842,
+        "(4,1)": 6.3,
+        "(5,1)": 4.950002,
+        "(6,1)": 2.925991,
+        "(8,1)": 4.134481,
+        "(9,1)": 1.962654,
+        "(10,0)": 1.707649,
+        "(11,0)": 6.3
+      },
+      "departure_truck_nonzero": {
+        "(1,0)": 1.840078,
+        "(1,1)": 0.491429,
+        "(2,0)": 2.716091,
+        "(2,1)": 0.837143,
+        "(3,0)": 1.02,
+        "(3,1)": 1.02,
+        "(4,0)": 0.977143,
+        "(4,1)": 5.096696,
+        "(5,0)": 1.194286,
+        "(5,1)": 2.840701,
+        "(7,0)": 0.651429,
+        "(7,1)": 3.652712,
+        "(9,1)": 2.032594,
+        "(11,0)": 2.0,
+        "(11,1)": 1.0
+      }
+    },
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 97.62,
+      "mip_objective": 97.62,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 80.0,
+      "drone_cost": 17.62,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    }
+  },
+  {
+    "instance": "data/Instance10/R_40_10_2.txt",
+    "config": {
+      "instance": "data/Instance10/R_40_10_2.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_40_10_2 fix v2"
+    },
+    "solve_time": 2284.3221497535706,
+    "status": 2,
+    "objective": 115.8,
+    "best_bound": 115.8,
+    "mip_gap": 0.0,
+    "runtime": 2284.2147448062897,
+    "truck_routes": [
+      {
+        "truck": 1,
+        "route": [
+          0,
+          2,
+          7,
+          9,
+          3,
+          8,
+          4,
+          5,
+          11
+        ],
+        "distance": 102.19999999999999
+      }
+    ],
+    "drone_tasks": [
+      {
+        "drone": 0,
+        "tasks": [
+          {
+            "launch_node": 7,
+            "retrieve_node": 9,
+            "customers": [
+              6
+            ],
+            "launch_truck": 1,
+            "retrieve_truck": null
+          }
+        ],
+        "distance": 42.7
+      },
+      {
+        "drone": 1,
+        "tasks": [],
+        "distance": 25.299999999999997
+      }
+    ],
+    "decision_variables": {
+      "x_truck_active": {
+        "(0,2,1)": 1.0,
+        "(2,7,1)": 1.0,
+        "(3,8,1)": 1.0,
+        "(4,5,1)": 1.0,
+        "(5,11,1)": 1.0,
+        "(7,9,1)": 1.0,
+        "(8,4,1)": 1.0,
+        "(9,3,1)": 1.0
+      },
+      "y_drone_active": {
+        "(1,11,1)": 1.0,
+        "(5,10,0)": 1.0,
+        "(6,9,0)": 1.0,
+        "(7,1,1)": 1.0,
+        "(7,6,0)": 1.0,
+        "(10,11,0)": 1.0
+      },
+      "z_coupling_active": {
+        "(0,2,1,0)": 1.0,
+        "(0,2,1,1)": 1.0,
+        "(2,7,1,0)": 1.0,
+        "(2,7,1,1)": 1.0,
+        "(3,8,1,0)": 1.0,
+        "(4,5,1,0)": 1.0,
+        "(8,4,1,0)": 1.0,
+        "(9,3,1,0)": 1.0
+      },
+      "u_sync_active": {
+        "(5,1,0)": 1.0,
+        "(7,1,0)": 1.0,
+        "(7,1,1)": 1.0
+      },
+      "arrival_truck_nonzero": {
+        "(2,1)": 0.105714,
+        "(3,1)": 1.971429,
+        "(4,1)": 2.225714,
+        "(5,1)": 2.511429,
+        "(7,1)": 0.597143,
+        "(8,1)": 2.074286,
+        "(9,1)": 0.988571,
+        "(10,0)": 0.582857,
+        "(10,1)": 0.582857,
+        "(11,0)": 0.539922,
+        "(11,1)": 2.92
+      },
+      "arrival_drone_nonzero": {
+        "(1,1)": 0.724286,
+        "(2,0)": 0.105714,
+        "(2,1)": 0.105714,
+        "(3,0)": 1.971429,
+        "(4,0)": 2.225714,
+        "(5,0)": 2.511429,
+        "(6,0)": 0.805714,
+        "(7,0)": 0.597143,
+        "(7,1)": 0.597143,
+        "(8,0)": 2.074286,
+        "(9,0)": 0.838571,
+        "(9,1)": 0.261928,
+        "(10,0)": 2.657143,
+        "(10,1)": 2.442763,
+        "(11,0)": 2.88,
+        "(11,1)": 0.958571
+      },
+      "tardiness_truck_nonzero": {},
+      "tardiness_drone_nonzero": {},
+      "delay_cost_truck_nonzero": {},
+      "delay_cost_drone_nonzero": {},
+      "load_truck_nonzero": {
+        "(0,0)": 500.0,
+        "(0,1)": 500.0,
+        "(1,0)": 470.0,
+        "(1,1)": 31.0,
+        "(2,0)": 500.0,
+        "(2,1)": 133.0,
+        "(3,0)": 42.0,
+        "(3,1)": 82.0,
+        "(4,1)": 75.0,
+        "(5,0)": 42.0,
+        "(5,1)": 33.0,
+        "(6,1)": 42.0,
+        "(7,0)": 30.0,
+        "(7,1)": 114.0,
+        "(8,0)": 490.208467,
+        "(8,1)": 75.0,
+        "(9,0)": 42.0,
+        "(9,1)": 83.0,
+        "(10,0)": 490.208467,
+        "(10,1)": 470.0,
+        "(11,0)": 481.0
+      },
+      "load_drone_plus_nonzero": {
+        "(5,0)": 18.0,
+        "(6,0)": 1.0,
+        "(7,0)": 6.0,
+        "(7,1)": 18.0
+      },
+      "load_drone_minus_nonzero": {
+        "(1,1)": 18.0,
+        "(4,0)": 12.0,
+        "(4,1)": 30.0,
+        "(5,0)": 30.0,
+        "(6,0)": 6.0,
+        "(6,1)": 30.0,
+        "(7,0)": 30.0,
+        "(7,1)": 30.0,
+        "(9,0)": 1.0,
+        "(10,0)": 18.0,
+        "(10,1)": 30.0
+      },
+      "energy_worst_case_nonzero": {
+        "(1,1)": 2.825424,
+        "(6,0)": 5.900463,
+        "(9,0)": 6.3,
+        "(10,0)": 3.238126,
+        "(11,0)": 6.3,
+        "(11,1)": 6.3
+      },
+      "departure_truck_nonzero": {
+        "(1,0)": 1.765792,
+        "(2,0)": 2.696091,
+        "(2,1)": 0.105714,
+        "(3,0)": 2.50464,
+        "(3,1)": 1.971429,
+        "(4,1)": 2.225714,
+        "(5,0)": 2.73521,
+        "(5,1)": 2.511429,
+        "(7,0)": 1.844022,
+        "(7,1)": 0.597143,
+        "(8,0)": 6.686335,
+        "(8,1)": 2.074286,
+        "(9,1)": 0.988571,
+        "(10,0)": 5.938478,
+        "(10,1)": 4.312763,
+        "(11,0)": 1.0,
+        "(11,1)": 3.0
+      }
+    },
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 115.8,
+      "mip_objective": 115.8,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 102.2,
+      "drone_cost": 13.6,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    }
+  },
+  {
+    "instance": "data/Instance10/R_40_10_3.txt",
+    "objective": 100.8199988809033,
+    "mip_gap": 0.14057583984770183,
+    "status": 9,
+    "runtime": 3600.0228118896484,
+    "solve_time": 3600.1231911182404,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 100.82,
+      "mip_objective": 100.8199988809033,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 85.3,
+      "drone_cost": 15.52,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_40_10_3.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_40_10_4.txt",
+    "objective": 92.65516557480143,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 758.9919941425323,
+    "solve_time": 759.1062531471252,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 89.5662,
+      "mip_objective": 92.65516557480143,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 79.1,
+      "drone_cost": 9.9,
+      "delay_cost": 0.5662,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_40_10_4.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_40_10_5.txt",
+    "objective": 148.23208347148946,
+    "mip_gap": 0.1516538447669471,
+    "status": 9,
+    "runtime": 3600.0191860198975,
+    "solve_time": 3600.115895986557,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 144.0674,
+      "mip_objective": 148.23208347148946,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 135.6,
+      "drone_cost": 7.7,
+      "delay_cost": 0.7674,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_40_10_5.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  }
+]

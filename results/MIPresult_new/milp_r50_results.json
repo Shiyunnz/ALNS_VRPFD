@@ -1,0 +1,157 @@
+[
+  {
+    "instance": "data/Instance10/R_50_10_1.txt",
+    "objective": 140.44279703329795,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 1755.391193151474,
+    "solve_time": 1755.5021929740906,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 134.8275,
+      "mip_objective": 140.44279703329795,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 119.8,
+      "drone_cost": 14.54,
+      "delay_cost": 0.4875,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_50_10_1.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_50_10_2.txt",
+    "objective": 214.37907205915292,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 458.15375995635986,
+    "solve_time": 458.2592990398407,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 209.819,
+      "mip_objective": 214.37907205915292,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 206.0,
+      "drone_cost": 3.32,
+      "delay_cost": 0.499,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_50_10_2.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_50_10_3.txt",
+    "objective": 191.8015310771252,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 460.9278972148895,
+    "solve_time": 461.03378105163574,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 181.6988,
+      "mip_objective": 191.8015310771252,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 168.4,
+      "drone_cost": 11.96,
+      "delay_cost": 1.3388,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_50_10_3.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_50_10_4.txt",
+    "objective": 184.50523911699548,
+    "mip_gap": 0.30343529320719265,
+    "status": 9,
+    "runtime": 3600.019795179367,
+    "solve_time": 3600.124018907547,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 182.4927,
+      "mip_objective": 184.50523911699548,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 174.6,
+      "drone_cost": 7.54,
+      "delay_cost": 0.3527,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_50_10_4.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  },
+  {
+    "instance": "data/Instance10/R_50_10_5.txt",
+    "objective": 233.73036006265377,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 320.4990611076355,
+    "solve_time": 320.600044965744,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 230.8237,
+      "mip_objective": 233.73036006265377,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 222.9,
+      "drone_cost": 7.4,
+      "delay_cost": 0.5237,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_50_10_5.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600
+    }
+  }
+]

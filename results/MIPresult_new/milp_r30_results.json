@@ -1,0 +1,162 @@
+[
+  {
+    "instance": "data/Instance10/R_30_10_1.txt",
+    "objective": 96.1806278900834,
+    "mip_gap": 0.18145656785864694,
+    "status": 9,
+    "runtime": 3600.024403810501,
+    "solve_time": 3600.1270520687103,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 92.92,
+      "mip_objective": 96.1806278900834,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 78.7,
+      "drone_cost": 14.22,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_30_10_1.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_30_10_1 fix v2"
+    }
+  },
+  {
+    "instance": "data/Instance10/R_30_10_2.txt",
+    "objective": 53.86,
+    "mip_gap": 0.1404755670472451,
+    "status": 9,
+    "runtime": 3600.016837120056,
+    "solve_time": 3600.123095035553,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 53.86,
+      "mip_objective": 53.86,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 31.6,
+      "drone_cost": 22.26,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_30_10_2.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_30_10_2 fix v2"
+    }
+  },
+  {
+    "instance": "data/Instance10/R_30_10_3.txt",
+    "objective": 78.28545256155509,
+    "mip_gap": 0.43222146958352936,
+    "status": 9,
+    "runtime": 3600.0145330429077,
+    "solve_time": 3600.1146948337555,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 77.2879,
+      "mip_objective": 78.28545256155509,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 64.0,
+      "drone_cost": 13.12,
+      "delay_cost": 0.1679,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_30_10_3.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_30_10_3 fix v2"
+    }
+  },
+  {
+    "instance": "data/Instance10/R_30_10_4.txt",
+    "objective": 57.12000000000001,
+    "mip_gap": 0.13479607574600097,
+    "status": 9,
+    "runtime": 3600.0159878730774,
+    "solve_time": 3600.11670088768,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 57.12,
+      "mip_objective": 57.12000000000001,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 34.2,
+      "drone_cost": 22.92,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_30_10_4.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_30_10_4 fix v2"
+    }
+  },
+  {
+    "instance": "data/Instance10/R_30_10_5.txt",
+    "objective": 60.35999999999999,
+    "mip_gap": 0.0,
+    "status": 2,
+    "runtime": 766.1227269172668,
+    "solve_time": 766.2280571460724,
+    "alns_verification": {
+      "alns_feasible": true,
+      "alns_cost": 60.36,
+      "mip_objective": 60.35999999999999,
+      "reconstruction_method": "y_arcs",
+      "robustness_violations": [],
+      "truck_cost": 41.2,
+      "drone_cost": 19.16,
+      "delay_cost": 0.0,
+      "robustness_feasible": true
+    },
+    "config": {
+      "instance": "data/Instance10/R_30_10_5.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 20.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 3600,
+      "notes": "R_30_10_5 fix v2"
+    }
+  }
+]

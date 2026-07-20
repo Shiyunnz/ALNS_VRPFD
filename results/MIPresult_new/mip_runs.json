@@ -1,0 +1,19 @@
+[
+  {
+    "instance": "data/Instance10/R_30_10_2.txt",
+    "config": {
+      "instance": "data/Instance10/R_30_10_2.txt",
+      "time_window_strategy": "class_based",
+      "epsilon": 0.001,
+      "energy_budget": 3,
+      "robust_energy": true,
+      "bigm_time": 1000,
+      "bigm_load": 1000,
+      "bigm_energy": 100000.0,
+      "tardiness_weight": 1.0,
+      "time_limit": 1800,
+      "notes": "MILP R_30_10_2 with tight droneLoad + droneEmpty constraints (no v_served)"
+    },
+    "error": "too many values to unpack (expected 2)"
+  }
+]
